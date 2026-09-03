@@ -31,8 +31,31 @@ import {
 
 const PAGE_SIZE = 10;
 const SAVED_KEY = "ltv-mvp-saved-views";
+const ACTION_RECOVERY_KEY = "ltv-mvp-action-recovery";
 
 type SavedView = { name: string; filters: ScoreFilters; sort: SortKey; sortDir: "asc" | "desc" };
+
+function recoverFromStaleServerAction(): boolean {
+  try {
+    if (sessionStorage.getItem(ACTION_RECOVERY_KEY) === "attempted") {
+      sessionStorage.removeItem(ACTION_RECOVERY_KEY);
+      return false;
+    }
+    sessionStorage.setItem(ACTION_RECOVERY_KEY, "attempted");
+    window.location.reload();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function clearServerActionRecovery() {
+  try {
+    sessionStorage.removeItem(ACTION_RECOVERY_KEY);
+  } catch {
+    /* Storage can be unavailable in privacy-restricted browsers. */
+  }
+}
 
 export function LtvApp() {
   const [task, setTask] = useState<TaskId | null>(null);
@@ -62,9 +85,14 @@ export function LtvApp() {
     (async () => {
       try {
         const h = await fetchHealth();
-        if (!cancelled) setHealth(h);
+        if (!cancelled) {
+          clearServerActionRecovery();
+          setHealth(h);
+        }
       } catch {
-        if (!cancelled) setLoadError("Could not load scoring health.");
+        if (!cancelled && !recoverFromStaleServerAction()) {
+          setLoadError("Could not load scoring health.");
+        }
       }
     })();
     try {
@@ -98,10 +126,13 @@ export function LtvApp() {
             page: p,
             pageSize: PAGE_SIZE,
           });
+          clearServerActionRecovery();
           setCohort(result);
           setLoadError(null);
         } catch {
-          setLoadError("Could not load player cohort.");
+          if (!recoverFromStaleServerAction()) {
+            setLoadError("Could not load player cohort.");
+          }
         }
       });
     },
