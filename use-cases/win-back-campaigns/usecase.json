@@ -9,7 +9,7 @@
   "category": "Marketing",
   "icon": "mail",
   "accent": "plum",
-  "resources": ["nkp", "casino-data-platform", "openrouter", "vector-db"],
+  "resources": ["openrouter"],
   "api": {
     "enabled": false,
     "baseUrlEnv": "WIN_BACK_CAMPAIGNS_API_URL"

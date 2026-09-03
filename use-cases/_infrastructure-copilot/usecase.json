@@ -6,7 +6,7 @@
   "status": "active",
   "owner": "Platform Engineering",
   "tags": ["operations", "chat", "inventory"],
-  "resources": ["prism-central", "nutanix-enterprise-ai"],
+  "resources": ["nutanix-enterprise-ai"],
   "api": {
     "enabled": true,
     "baseUrlEnv": "INFRASTRUCTURE_COPILOT_API_URL"

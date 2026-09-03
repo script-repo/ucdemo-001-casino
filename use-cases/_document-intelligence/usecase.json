@@ -6,7 +6,7 @@
   "status": "beta",
   "owner": "Knowledge Management",
   "tags": ["rag", "search", "documents"],
-  "resources": ["nutanix-enterprise-ai", "vector-db"],
+  "resources": ["nutanix-enterprise-ai"],
   "api": {
     "enabled": false
   },

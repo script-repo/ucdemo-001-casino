@@ -9,7 +9,7 @@
   "category": "Marketing",
   "icon": "tag",
   "accent": "navy",
-  "resources": ["nkp", "casino-data-platform", "openrouter", "vector-db"],
+  "resources": ["openrouter"],
   "api": {
     "enabled": false,
     "baseUrlEnv": "DYNAMIC_OFFER_ENGINE_API_URL"

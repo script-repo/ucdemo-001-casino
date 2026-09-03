@@ -9,7 +9,7 @@
   "category": "Finance",
   "icon": "users",
   "accent": "burgundy",
-  "resources": ["nkp", "casino-data-platform", "model-registry"],
+  "resources": [],
   "api": {
     "enabled": false,
     "baseUrlEnv": "PREDICTIVE_LTV_SCORING_API_URL"

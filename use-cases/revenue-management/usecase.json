@@ -9,7 +9,7 @@
   "category": "Finance",
   "icon": "trendingUp",
   "accent": "bronze",
-  "resources": ["nkp", "casino-data-platform", "model-registry"],
+  "resources": [],
   "api": {
     "enabled": false,
     "baseUrlEnv": "REVENUE_MANAGEMENT_API_URL"

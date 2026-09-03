@@ -2,113 +2,25 @@
   "$schema": "./resources.schema.json",
   "resources": [
     {
-      "id": "prism-central",
-      "name": "Nutanix Prism Central",
-      "category": "Infrastructure",
-      "summary": "Control plane for clusters, VMs, storage, and networking. Use cases read inventory and metrics from it; write operations require review.",
-      "docs": "shared-resources/prism-central/README.md",
-      "env": [
-        {
-          "name": "PRISM_CENTRAL_ENDPOINT",
-          "required": true,
-          "secret": false,
-          "example": "https://pc.lab.example.com:9440",
-          "description": "Base URL of the Prism Central v4 API, including port."
-        },
-        {
-          "name": "PRISM_CENTRAL_USERNAME",
-          "required": true,
-          "secret": false,
-          "example": "svc-ai-portal",
-          "description": "Service account with the least privilege the use case needs."
-        },
-        {
-          "name": "PRISM_CENTRAL_PASSWORD",
-          "required": true,
-          "secret": true,
-          "example": "",
-          "description": "Service account password. Never commit; sourced from a Kubernetes Secret in cluster."
-        },
-        {
-          "name": "PRISM_CENTRAL_INSECURE_TLS",
-          "required": false,
-          "secret": false,
-          "example": "false",
-          "description": "Set to true only for lab endpoints using self-signed certificates."
-        }
-      ]
-    },
-    {
-      "id": "nkp",
-      "name": "Nutanix Kubernetes Platform",
-      "category": "Compute",
-      "summary": "Managed Kubernetes that hosts the portal and any use-case backends. Also the target for GPU workloads scheduled by use cases.",
-      "docs": "shared-resources/nkp/README.md",
-      "env": [
-        {
-          "name": "NKP_CLUSTER_NAME",
-          "required": true,
-          "secret": false,
-          "example": "nkp-ai-prod",
-          "description": "Name of the workload cluster the portal is deployed to."
-        },
-        {
-          "name": "NKP_API_SERVER",
-          "required": true,
-          "secret": false,
-          "example": "https://nkp-ai-prod.lab.example.com:6443",
-          "description": "Kubernetes API server URL for the workload cluster."
-        },
-        {
-          "name": "NKP_NAMESPACE",
-          "required": true,
-          "secret": false,
-          "example": "ai-portal",
-          "description": "Namespace that owns the portal and its use-case backends."
-        },
-        {
-          "name": "NKP_KUBECONFIG",
-          "required": false,
-          "secret": true,
-          "example": "/var/run/secrets/nkp/kubeconfig",
-          "description": "Path to a kubeconfig. Omit in cluster, where the mounted service account is used instead."
-        }
-      ]
-    },
-    {
       "id": "nutanix-enterprise-ai",
       "name": "Nutanix Enterprise AI",
       "category": "Inference",
-      "summary": "On-premises OpenAI-compatible inference endpoint. Not reachable from the NKP cluster and publishes no embedding model, so the backends target the OpenRouter gateway instead. Retained for workstation use and for when cluster egress is opened.",
+      "summary": "On-premises OpenAI-compatible inference endpoint for enterprise AI workloads.",
       "docs": "shared-resources/nutanix-enterprise-ai/README.md",
       "env": [
         {
           "name": "NAI_ENDPOINT",
           "required": true,
           "secret": false,
-          "example": "https://nai-dre.corp.p10y.ntnxdpro.com/enterpriseai/gateway/v1",
-          "description": "OpenAI-compatible base URL. Call over plain HTTP so the reasoning field is not discarded."
+          "example": "https://nai.example.com/enterpriseai/gateway/v1",
+          "description": "OpenAI-compatible Enterprise AI endpoint."
         },
         {
           "name": "NAI_API_KEY",
           "required": true,
           "secret": true,
           "example": "",
-          "description": "API key issued per use case so usage can be attributed and revoked independently."
-        },
-        {
-          "name": "NAI_CHAT_MODEL",
-          "required": true,
-          "secret": false,
-          "example": "nemotron3-fp4-uni",
-          "description": "Default chat/completion model name as published by the endpoint."
-        },
-        {
-          "name": "NAI_EMBEDDING_MODEL",
-          "required": false,
-          "secret": false,
-          "example": "",
-          "description": "Embedding model. This endpoint publishes none yet; must match the model that populated the vector collection."
+          "description": "API key used to authenticate with Nutanix Enterprise AI."
         }
       ]
     },
@@ -116,182 +28,15 @@
       "id": "openrouter",
       "name": "OpenRouter Model Gateway",
       "category": "Inference",
-      "summary": "OpenAI-compatible gateway serving NVIDIA Nemotron chat, embedding, and rerank models. Reachable from the NKP cluster, unlike the on-premises Enterprise AI endpoint, so it is the gateway the backends target.",
+      "summary": "OpenAI-compatible gateway for hosted model inference.",
       "docs": "shared-resources/openrouter/README.md",
       "env": [
-        {
-          "name": "OPENROUTER_BASE_URL",
-          "required": true,
-          "secret": false,
-          "example": "https://openrouter.ai/api/v1",
-          "description": "OpenAI-compatible base URL. Also serves /embeddings and a non-standard /rerank."
-        },
         {
           "name": "OPENROUTER_API_KEY",
           "required": true,
           "secret": true,
           "example": "",
-          "description": "Account-wide key. Free-variant rate limits apply per account, not per key, so issuing one key per use case does not raise the ceiling."
-        },
-        {
-          "name": "OPENROUTER_CHAT_MODEL",
-          "required": true,
-          "secret": false,
-          "example": "nvidia/nemotron-3-super-120b-a12b:free",
-          "description": "Default chat model. Returns a separate reasoning field whose tokens count against max_tokens."
-        },
-        {
-          "name": "OPENROUTER_CHAT_MODEL_FAST",
-          "required": false,
-          "secret": false,
-          "example": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
-          "description": "Lower-latency alternative for short narrative. Also accepts audio, image, and video input."
-        },
-        {
-          "name": "OPENROUTER_EMBEDDING_MODEL",
-          "required": true,
-          "secret": false,
-          "example": "nvidia/nemotron-3-embed-1b:free",
-          "description": "Embedding model. Free variant only; there is no paid variant to fall back to."
-        },
-        {
-          "name": "OPENROUTER_EMBEDDING_DIMENSIONS",
-          "required": true,
-          "secret": false,
-          "example": "2048",
-          "description": "Fixed at 2048. The model rejects any other value, and 2048 exceeds pgvector's 2000-dimension index limit — see the vector database README."
-        },
-        {
-          "name": "OPENROUTER_RERANK_MODEL",
-          "required": false,
-          "secret": false,
-          "example": "nvidia/llama-nemotron-rerank-vl-1b-v2:free",
-          "description": "Second-stage reranker over vector-search candidates. Scores are relative, not calibrated probabilities."
-        },
-        {
-          "name": "OPENROUTER_MAX_TOKENS",
-          "required": false,
-          "secret": false,
-          "example": "1536",
-          "description": "Budget generously: reasoning tokens are billed against this, and a tight budget truncates the answer before any content is emitted."
-        }
-      ]
-    },
-    {
-      "id": "casino-data-platform",
-      "name": "Casino Data Platform",
-      "category": "Data",
-      "summary": "One Postgres holding the simulated CMS (cms_raw), the shared contracts (analytics.player_scores, analytics.eligible_players, analytics.decision_log), and a private schema per use case. The schema is the contract; no code is shared.",
-      "docs": "shared-resources/casino-data-platform/README.md",
-      "env": [
-        {
-          "name": "CASINO_DB_HOST",
-          "required": true,
-          "secret": false,
-          "example": "casino-postgres.casino-ai-portal.svc.cluster.local",
-          "description": "Postgres service address. Prefer the in-cluster name."
-        },
-        {
-          "name": "CASINO_DB_PORT",
-          "required": true,
-          "secret": false,
-          "example": "5432",
-          "description": "Postgres port."
-        },
-        {
-          "name": "CASINO_DB_NAME",
-          "required": true,
-          "secret": false,
-          "example": "casino",
-          "description": "Database holding cms_raw, analytics, and the uc_* schemas."
-        },
-        {
-          "name": "CASINO_DB_USER",
-          "required": true,
-          "secret": false,
-          "example": "uc_predictive_ltv",
-          "description": "Role issued per use case. Read on cms_raw, write only on its own schema and the contract columns it owns."
-        },
-        {
-          "name": "CASINO_DB_PASSWORD",
-          "required": true,
-          "secret": true,
-          "example": "",
-          "description": "Role password. Sourced from a Kubernetes Secret in cluster."
-        },
-        {
-          "name": "CASINO_DB_SSLMODE",
-          "required": false,
-          "secret": false,
-          "example": "require",
-          "description": "Set to disable only for in-cluster lab traffic."
-        }
-      ]
-    },
-    {
-      "id": "model-registry",
-      "name": "Model Registry",
-      "category": "Machine Learning",
-      "summary": "MLflow tracking and registry on NKP. The run id it issues is the model_version written to player_scores and decision_log, which is what makes a recommendation reconstructible at audit.",
-      "docs": "shared-resources/model-registry/README.md",
-      "env": [
-        {
-          "name": "MLFLOW_TRACKING_URI",
-          "required": true,
-          "secret": false,
-          "example": "http://mlflow.casino-ai-portal.svc.cluster.local:5000",
-          "description": "Tracking server URL. Training jobs log runs here; scoring jobs resolve model versions from it."
-        },
-        {
-          "name": "MLFLOW_EXPERIMENT_PREFIX",
-          "required": false,
-          "secret": false,
-          "example": "casino",
-          "description": "Prefix for experiment names so use cases do not collide in the registry."
-        },
-        {
-          "name": "MLFLOW_TRACKING_TOKEN",
-          "required": false,
-          "secret": true,
-          "example": "",
-          "description": "Bearer token, if the tracking server enforces authentication."
-        }
-      ]
-    },
-    {
-      "id": "vector-db",
-      "name": "Vector Database",
-      "category": "Data",
-      "summary": "Retrieval store, pgvector inside the casino Postgres. Now usable: the OpenRouter gateway serves embeddings. Vectors are 2048-dimensional, which exceeds pgvector's 2000-dimension index limit, so indexes are built on a halfvec cast.",
-      "docs": "shared-resources/vector-db/README.md",
-      "env": [
-        {
-          "name": "VECTOR_DB_KIND",
-          "required": true,
-          "secret": false,
-          "example": "pgvector",
-          "description": "One of pgvector, milvus, qdrant, or weaviate. Drives which client a use case vendors in."
-        },
-        {
-          "name": "VECTOR_DB_ENDPOINT",
-          "required": true,
-          "secret": false,
-          "example": "postgresql://casino-postgres.casino-ai-portal.svc.cluster.local:5432/casino",
-          "description": "Connection URL. Prefer the in-cluster service address."
-        },
-        {
-          "name": "VECTOR_DB_API_KEY",
-          "required": false,
-          "secret": true,
-          "example": "",
-          "description": "Token or user:password pair, if the deployment enforces authentication."
-        },
-        {
-          "name": "VECTOR_DB_DATABASE",
-          "required": false,
-          "secret": false,
-          "example": "ai_portal",
-          "description": "Logical database. Collections are namespaced per use case beneath it."
+          "description": "API key used to authenticate with OpenRouter."
         }
       ]
     }
