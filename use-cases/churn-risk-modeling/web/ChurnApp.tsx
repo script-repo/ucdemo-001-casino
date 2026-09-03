@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   CHURN_DATA,
   MODEL_VERSION,
@@ -296,6 +296,53 @@ function PlayerPanel({
   onNote: (value: string) => void;
   onOutcome: (outcome: OutreachOutcome) => void;
 }) {
+  const [recommendation, setRecommendation] = useState<{
+    text: string;
+    provider: string;
+    model: string;
+  } | null>(null);
+  const [aiPending, setAiPending] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setRecommendation(null);
+    setAiError(null);
+  }, [player.playerId]);
+
+  async function recommendAction() {
+    setAiPending(true);
+    setAiError(null);
+    try {
+      const response = await fetch("/api/churn-risk-modeling", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ playerId: player.playerId }),
+      });
+      const result = (await response.json()) as {
+        text?: string;
+        provider?: string;
+        model?: string;
+        error?: string;
+      };
+      if (!response.ok || !result.text) {
+        throw new Error(result.error ?? "Recommended action could not be generated.");
+      }
+      setRecommendation({
+        text: result.text,
+        provider: result.provider ?? "Inference gateway",
+        model: result.model ?? "selected model",
+      });
+    } catch (error) {
+      setAiError(
+        error instanceof Error
+          ? error.message
+          : "Recommended action could not be generated.",
+      );
+    } finally {
+      setAiPending(false);
+    }
+  }
+
   return (
     <div className="space-y-4">
       <article className="rounded-lg border border-stone-200 bg-white p-5">
@@ -357,6 +404,38 @@ function PlayerPanel({
             </li>
           ))}
         </ul>
+      </article>
+
+      <article className="rounded-lg border border-gold-600/40 bg-white p-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-wide text-charcoal-700">
+              Generative AI · host guidance
+            </p>
+            <h4 className="mt-1 font-serif text-lg text-navy-900">
+              Recommended retention action
+            </h4>
+          </div>
+          <button
+            type="button"
+            disabled={aiPending}
+            onClick={recommendAction}
+            className="rounded-md bg-navy-900 px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
+          >
+            {aiPending ? "Generating…" : "Recommend action"}
+          </button>
+        </div>
+        {recommendation && (
+          <>
+            <p className="mt-3 whitespace-pre-line rounded-md bg-mist-100 p-3 text-sm leading-relaxed text-charcoal-900">
+              {recommendation.text.replaceAll("**", "")}
+            </p>
+            <p className="mt-2 text-[10px] text-charcoal-700">
+              {recommendation.provider} · {recommendation.model}
+            </p>
+          </>
+        )}
+        {aiError && <p className="mt-3 text-sm text-burgundy-700">{aiError}</p>}
       </article>
 
       <article className="rounded-lg border border-stone-200 bg-white p-5">

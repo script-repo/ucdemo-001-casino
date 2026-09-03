@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BUDGET,
   OFFER_CATALOGUE,
@@ -292,6 +292,50 @@ function ProposalPanel({
     (offer) => offer.minPercentile <= proposal.ltvPercentile,
   );
   const editedOffer = alternatives.find((offer) => offer.id === editedOfferId);
+  const [aiRationale, setAiRationale] = useState<{
+    text: string;
+    provider: string;
+    model: string;
+  } | null>(null);
+  const [aiPending, setAiPending] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setAiRationale(null);
+    setAiError(null);
+  }, [proposal.proposalId]);
+
+  async function generateRationale() {
+    setAiPending(true);
+    setAiError(null);
+    try {
+      const response = await fetch("/api/dynamic-offer-engine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ proposalId: proposal.proposalId, proposal }),
+      });
+      const result = (await response.json()) as {
+        text?: string;
+        provider?: string;
+        model?: string;
+        error?: string;
+      };
+      if (!response.ok || !result.text) {
+        throw new Error(result.error ?? "AI rationale could not be generated.");
+      }
+      setAiRationale({
+        text: result.text,
+        provider: result.provider ?? "Inference gateway",
+        model: result.model ?? "selected model",
+      });
+    } catch (error) {
+      setAiError(
+        error instanceof Error ? error.message : "AI rationale could not be generated.",
+      );
+    } finally {
+      setAiPending(false);
+    }
+  }
 
   return (
     <article className="space-y-4 rounded-lg border border-stone-200 bg-white p-5">
@@ -324,6 +368,25 @@ function ProposalPanel({
           </span>
         </div>
         <p className="mt-2 text-sm leading-relaxed text-charcoal-700">{proposal.rationale}</p>
+        <button
+          type="button"
+          disabled={aiPending}
+          onClick={generateRationale}
+          className="mt-3 rounded-md border border-navy-700 bg-white px-3 py-2 text-xs font-semibold text-navy-900 disabled:opacity-50"
+        >
+          {aiPending ? "Generating…" : "Generate AI rationale"}
+        </button>
+        {aiRationale && (
+          <>
+            <p className="mt-3 whitespace-pre-line border-t border-stone-200 pt-3 text-sm leading-relaxed text-charcoal-900">
+              {aiRationale.text.replaceAll("**", "")}
+            </p>
+            <p className="mt-2 text-[10px] text-charcoal-700">
+              {aiRationale.provider} · {aiRationale.model}
+            </p>
+          </>
+        )}
+        {aiError && <p className="mt-3 text-sm text-burgundy-700">{aiError}</p>}
       </div>
 
       <dl className="grid grid-cols-2 gap-3 text-sm">

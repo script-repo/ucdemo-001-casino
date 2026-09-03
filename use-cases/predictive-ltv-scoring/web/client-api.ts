@@ -31,6 +31,8 @@ export type AiBriefing = {
   model: string;
 };
 
+export type PlayerAction = AiBriefing;
+
 async function responseJson<T>(response: Response): Promise<T> {
   const payload = (await response.json()) as T & { error?: string };
   if (!response.ok) {
@@ -112,6 +114,18 @@ export async function generateAiBriefing(
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ operation: "ai-briefing", filters }),
+    }),
+  );
+}
+
+export async function generatePlayerAction(
+  playerId: number,
+): Promise<PlayerAction> {
+  return responseJson(
+    await fetch("/api/expected-player-value", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ operation: "player-action", playerId }),
     }),
   );
 }

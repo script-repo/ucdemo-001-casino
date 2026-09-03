@@ -36,6 +36,38 @@ const SAVED_KEY = "ltv-mvp-saved-views";
 
 type SavedView = { name: string; filters: ScoreFilters; sort: SortKey; sortDir: "asc" | "desc" };
 
+function readableBriefing(text: string) {
+  const headings = [
+    "BOTTOM LINE",
+    "WHAT STANDS OUT",
+    "RECOMMENDED NEXT STEPS",
+    "WATCH OUT",
+  ];
+  const sections: Array<{ heading: string; lines: string[] }> = [];
+  let current = { heading: "BOTTOM LINE", lines: [] as string[] };
+  sections.push(current);
+
+  for (const rawLine of text.replaceAll("**", "").split(/\r?\n/)) {
+    const line = rawLine.trim();
+    if (!line) continue;
+    const matched = headings.find((heading) =>
+      line.toUpperCase().replace(/[:#]/g, "").trim().startsWith(heading),
+    );
+    if (matched) {
+      current = sections.find((section) => section.heading === matched) ?? {
+        heading: matched,
+        lines: [],
+      };
+      if (!sections.includes(current)) sections.push(current);
+      const remainder = line.slice(line.toUpperCase().indexOf(matched) + matched.length).replace(/^[:\s-]+/, "");
+      if (remainder) current.lines.push(remainder);
+      continue;
+    }
+    current.lines.push(line.replace(/^[-*•\d.)\s]+/, ""));
+  }
+  return sections.filter((section) => section.lines.length > 0);
+}
+
 export function LtvApp() {
   const [task, setTask] = useState<TaskId | null>(null);
   const [health, setHealth] = useState<HealthPayload | null>(null);
@@ -233,6 +265,10 @@ export function LtvApp() {
   }
 
   const summary = health?.summary;
+  const aiSections = useMemo(
+    () => (aiBriefing ? readableBriefing(aiBriefing.text) : []),
+    [aiBriefing],
+  );
   const property = cohort?.property ?? health?.run.property ?? "this property";
 
   const headerBlurb = useMemo(() => {
@@ -319,9 +355,26 @@ export function LtvApp() {
             </div>
             {aiBriefing ? (
               <>
-                <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-charcoal-900">
-                  {aiBriefing.text}
-                </p>
+                <div className="mt-4 grid gap-3 md:grid-cols-2">
+                  {aiSections.map((section) => (
+                    <div
+                      key={section.heading}
+                      className="rounded-md border border-stone-200 bg-mist-100 p-4"
+                    >
+                      <h4 className="text-xs font-semibold uppercase tracking-wide text-navy-900">
+                        {section.heading}
+                      </h4>
+                      <ul className="mt-2 space-y-2 text-sm leading-relaxed text-charcoal-900">
+                        {section.lines.map((line, index) => (
+                          <li key={`${line}-${index}`} className="flex gap-2">
+                            <span className="text-gold-600" aria-hidden>•</span>
+                            <span>{line}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ))}
+                </div>
                 <p className="mt-4 border-t border-stone-200 pt-3 text-xs text-charcoal-700">
                   Generated from aggregated synthetic data. Review before use;
                   predicted value is not an approved reinvestment amount.

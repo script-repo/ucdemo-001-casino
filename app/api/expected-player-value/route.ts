@@ -15,7 +15,10 @@ import type {
   CohortQuery,
   ScoreFilters,
 } from "@/use-cases/predictive-ltv-scoring/web/types";
-import { generateEpvBriefing } from "@/lib/model-gateways";
+import {
+  generateEpvBriefing,
+  generateModelText,
+} from "@/lib/model-gateways";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -84,6 +87,7 @@ export async function POST(request: Request) {
     operation?: unknown;
     query?: unknown;
     filters?: unknown;
+    playerId?: unknown;
   };
   try {
     const raw = await request.text();
@@ -132,6 +136,32 @@ export async function POST(request: Request) {
         "Provide: (1) executive summary, (2) three observations, (3) responsible next actions, and (4) caveats.",
       ].join("\n");
       return noStore(await generateEpvBriefing(context));
+    }
+    if (body.operation === "player-action") {
+      const playerId = Number(body.playerId);
+      const player = getPlayer(playerId);
+      if (!player) {
+        return noStore({ error: "Player was not found." }, { status: 404 });
+      }
+      const context = [
+        `Synthetic player: ${player.displayLabel}`,
+        `Tier: ${player.tier}`,
+        `Expected 12-month value: ${player.ltv12m == null ? "not scored due to insufficient history" : `$${player.ltv12m.toLocaleString()}`}`,
+        `Property percentile: ${player.percentile ?? "not available"}`,
+        `Trend: ${player.trend ?? "not available"}`,
+        `Activity: ${player.activity}`,
+        `Visits observed: ${player.visitCount}`,
+        `Last visit: ${player.lastVisit ?? "not available"}`,
+        `Likely value range: ${player.intervalLow == null ? "not available" : `$${player.intervalLow.toLocaleString()} to $${player.intervalHigh?.toLocaleString()}`}`,
+        `Top drivers: ${player.drivers.slice(0, 3).map((driver) => driver.text).join("; ") || "insufficient data"}`,
+      ].join("\n");
+      return noStore(
+        await generateModelText({
+          systemPrompt:
+            "You are assisting a casino host with synthetic player analytics. State exactly one responsible next action in plain language. Use exactly these headings: DO NOW, WHY, DO NOT. Keep each section to one or two short sentences. Never approve an offer, invent facts, recommend increased gambling, or contact a player without applicable eligibility checks.",
+          context,
+        }),
+      );
     }
   } catch (error) {
     return noStore(

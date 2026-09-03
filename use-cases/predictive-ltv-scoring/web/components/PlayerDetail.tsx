@@ -1,6 +1,11 @@
 "use client";
 
-import type { PlayerDetailPayload } from "../client-api";
+import { useEffect, useState } from "react";
+import {
+  generatePlayerAction,
+  type PlayerAction,
+  type PlayerDetailPayload,
+} from "../client-api";
 import {
   activityLabel,
   formatDate,
@@ -21,6 +26,31 @@ export function PlayerDetail({
 }) {
   const { player, narrative, cmsUrl } = detail;
   const scored = player.ltv12m != null;
+  const [action, setAction] = useState<PlayerAction | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [actionPending, setActionPending] = useState(false);
+
+  useEffect(() => {
+    setAction(null);
+    setActionError(null);
+  }, [player.playerId]);
+
+  async function recommendAction() {
+    setActionPending(true);
+    setActionError(null);
+    try {
+      setAction(await generatePlayerAction(player.playerId));
+    } catch (error) {
+      setAction(null);
+      setActionError(
+        error instanceof Error
+          ? error.message
+          : "A recommended action could not be generated.",
+      );
+    } finally {
+      setActionPending(false);
+    }
+  }
 
   return (
     <div
@@ -145,6 +175,40 @@ export function PlayerDetail({
             </details>
           </>
         )}
+
+        <section className="rounded-lg border border-gold-600/40 bg-white p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-charcoal-700">
+                Generative AI · host guidance
+              </p>
+              <h4 className="mt-1 font-serif text-lg text-navy-900">
+                Recommended action
+              </h4>
+            </div>
+            <button
+              type="button"
+              disabled={actionPending}
+              onClick={recommendAction}
+              className="rounded-md bg-navy-900 px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
+            >
+              {actionPending ? "Generating…" : "Recommend action"}
+            </button>
+          </div>
+          {action && (
+            <>
+              <p className="mt-3 whitespace-pre-line rounded-md bg-mist-100 p-3 text-sm leading-relaxed text-charcoal-900">
+                {action.text.replaceAll("**", "")}
+              </p>
+              <p className="mt-2 text-[10px] text-charcoal-700">
+                {action.provider} · {action.model}
+              </p>
+            </>
+          )}
+          {actionError && (
+            <p className="mt-3 text-sm text-burgundy-700">{actionError}</p>
+          )}
+        </section>
 
         <div className="rounded-md border border-stone-200 bg-mist-100 px-3 py-2 text-xs text-charcoal-700">
           Prediction only — not a guarantee, automatic offer, or approved

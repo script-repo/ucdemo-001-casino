@@ -195,7 +195,11 @@ async function resolveChatGateways(): Promise<ChatGateway[]> {
   );
 }
 
-async function requestChat(gateway: ChatGateway, context: string) {
+async function requestChat(
+  gateway: ChatGateway,
+  systemPrompt: string,
+  context: string,
+) {
   const response = await fetch(endpoint(gateway.baseUrl, "chat/completions"), {
     method: "POST",
     headers: {
@@ -209,8 +213,7 @@ async function requestChat(gateway: ChatGateway, context: string) {
       messages: [
         {
           role: "system",
-          content:
-            "You are a casino player-development analyst. Produce a concise operational briefing from aggregated, synthetic Expected Player Value data. Do not invent facts, prescribe gambling behavior, or treat predicted value as an approved offer. Use short headings and bullets.",
+          content: systemPrompt,
         },
         {
           role: "user",
@@ -236,7 +239,13 @@ async function requestChat(gateway: ChatGateway, context: string) {
   };
 }
 
-export async function generateEpvBriefing(context: string): Promise<{
+export async function generateModelText({
+  systemPrompt,
+  context,
+}: {
+  systemPrompt: string;
+  context: string;
+}): Promise<{
   text: string;
   provider: string;
   model: string;
@@ -245,7 +254,7 @@ export async function generateEpvBriefing(context: string): Promise<{
   const failures: string[] = [];
   for (const gateway of gateways) {
     try {
-      return await requestChat(gateway, context);
+      return await requestChat(gateway, systemPrompt, context);
     } catch (error) {
       failures.push(
         `${gateway.provider}: ${error instanceof Error ? error.message : "unavailable"}`,
@@ -253,4 +262,12 @@ export async function generateEpvBriefing(context: string): Promise<{
     }
   }
   throw new Error(`No inference gateway succeeded. ${failures.join(" ")}`);
+}
+
+export async function generateEpvBriefing(context: string) {
+  return generateModelText({
+    systemPrompt:
+      "You are a casino player-development analyst. Explain aggregated, synthetic Expected Player Value data in very simple language. Use exactly these headings: BOTTOM LINE, WHAT STANDS OUT, RECOMMENDED NEXT STEPS, WATCH OUT. Under BOTTOM LINE write two short sentences. Under the other headings use no more than three short bullets. Do not use jargon, invent facts, prescribe gambling behavior, or treat predicted value as an approved offer.",
+    context,
+  });
 }
