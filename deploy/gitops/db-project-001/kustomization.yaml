@@ -18,4 +18,4 @@ resources:
 
 images:
   - name: ghcr.io/script-repo/ucdemo-001-casino/portal
-    newTag: sha-4a7a144c7b59b924c9cf29fafeb9023012c7b222
+    newTag: sha-982a9df04e4168ccfb3467c63d11e130eb20b46e
