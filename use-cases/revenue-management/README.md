@@ -3,7 +3,8 @@
 Dynamic room rates from demand forecasts, booking pace, and the gaming value of
 the guest being priced.
 
-**Status:** planned. Scaffolded UI only; no model or backend yet.
+**Status:** beta. Interactive synthetic forecast, rate review, auditable overrides,
+accuracy comparison, and inference-backed revenue reports are available.
 
 Full design — outcomes, contracts, infrastructure, UI, flows, and API — is in
 [`DESIGN.md`](./DESIGN.md). This README is the summary.
@@ -15,7 +16,8 @@ and segment. Writes nothing to the score contract.
 
 ## Approach
 
-Time-series forecasting of occupancy and rate by date and segment.
+Gradient-boosted demand forecasting by date and room type, followed by an
+explainable rate-rules layer.
 
 Hotel-side and largely independent of player scoring, but casino demand feeds the
 forecast: the event calendar and expected high-value arrivals both move the right

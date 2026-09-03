@@ -3,13 +3,16 @@
   "slug": "revenue-management",
   "title": "Revenue Management",
   "summary": "Recommend room rates from a demand forecast that reserves inventory for expected casino demand, so cash bookings do not displace players worth more than the rate.",
-  "status": "planned",
-  "owner": "unassigned",
+  "status": "beta",
+  "owner": "Revenue Management",
   "tags": ["Revenue", "Forecasting", "Pricing"],
   "category": "Finance",
   "icon": "trendingUp",
   "accent": "bronze",
-  "resources": [],
+  "resources": [
+    "nutanix-enterprise-ai",
+    "openrouter"
+  ],
   "api": {
     "enabled": false,
     "baseUrlEnv": "REVENUE_MANAGEMENT_API_URL"
