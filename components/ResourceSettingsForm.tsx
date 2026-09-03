@@ -33,6 +33,7 @@ export function ResourceSettingsForm({
   const [testing, setTesting] = useState(false);
   const [models, setModels] = useState<string[]>([]);
   const [selectedModel, setSelectedModel] = useState("");
+  const [savedModel, setSavedModel] = useState("");
   const [message, setMessage] = useState<{
     tone: "ok" | "error";
     text: string;
@@ -73,6 +74,7 @@ export function ResourceSettingsForm({
       setValues({});
       setModels([]);
       setSelectedModel("");
+      setSavedModel("");
       setMessage({
         tone: "ok",
         text: body.clear ? "Setting cleared." : "Settings saved securely.",
@@ -108,6 +110,7 @@ export function ResourceSettingsForm({
       });
       setModels(result.models ?? []);
       setSelectedModel(result.selectedModel ?? "");
+      setSavedModel(result.selectedModel ?? "");
     } catch (error) {
       setMessage({
         tone: "error",
@@ -119,8 +122,8 @@ export function ResourceSettingsForm({
     }
   }
 
-  async function selectModel(model: string) {
-    setSelectedModel(model);
+  async function saveSelectedModel() {
+    if (!selectedModel) return;
     setPending(true);
     setMessage(null);
     try {
@@ -130,14 +133,16 @@ export function ResourceSettingsForm({
         body: JSON.stringify({
           resourceId,
           operation: "select-model",
-          model,
+          model: selectedModel,
         }),
       });
       const result = (await response.json()) as ApiResult;
       if (!response.ok || !result.ok) {
         throw new Error(result.error ?? "Model selection could not be saved.");
       }
-      setSelectedModel(result.selectedModel ?? model);
+      const saved = result.selectedModel ?? selectedModel;
+      setSelectedModel(saved);
+      setSavedModel(saved);
       setMessage({ tone: "ok", text: "Default inference model saved." });
     } catch (error) {
       setMessage({
@@ -237,14 +242,15 @@ export function ResourceSettingsForm({
       </div>
 
       {models.length > 0 && (
-        <label className="mt-4 block rounded-md border border-stone-200 bg-mist-100 p-3">
+        <div className="mt-4 rounded-md border border-stone-200 bg-mist-100 p-3">
+          <label>
           <span className="block text-xs font-semibold uppercase tracking-wide text-charcoal-700">
             Default inference model
           </span>
           <select
             value={selectedModel}
             disabled={pending || testing}
-            onChange={(event) => void selectModel(event.target.value)}
+            onChange={(event) => setSelectedModel(event.target.value)}
             className="mt-2 h-10 w-full rounded-md border border-stone-200 bg-white px-3 text-sm text-charcoal-900 focus:border-navy-700 focus:outline-none"
           >
             <option value="" disabled>
@@ -256,7 +262,28 @@ export function ResourceSettingsForm({
               </option>
             ))}
           </select>
-        </label>
+          </label>
+          <div className="mt-3 flex flex-wrap items-center gap-3">
+            <button
+              type="button"
+              disabled={
+                pending ||
+                testing ||
+                !selectedModel ||
+                selectedModel === savedModel
+              }
+              onClick={saveSelectedModel}
+              className="rounded-md bg-navy-900 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {pending ? "Saving…" : "Save as default model"}
+            </button>
+            {savedModel && (
+              <span className="text-xs text-success-dark">
+                Current default: {savedModel}
+              </span>
+            )}
+          </div>
+        </div>
       )}
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
