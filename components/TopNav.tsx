@@ -28,7 +28,7 @@ export function TopNav() {
   const pathname = usePathname() ?? "/";
 
   return (
-    <header className="border-b border-hairline bg-ink-900">
+    <header className="border-b border-stone-200 bg-white">
       <div className="mx-auto flex h-16 max-w-[1680px] items-center gap-8 px-6">
         <Link
           href="/"
@@ -44,7 +44,7 @@ export function TopNav() {
             />
             <path d="M12 7 17 12 12 17 7 12 12 7Z" fill="currentColor" />
           </svg>
-          <span className="font-serif text-lg tracking-tight text-ivory-100">
+          <span className="font-serif text-lg tracking-tight text-navy-950">
             Enterprise AI Portal
           </span>
         </Link>
@@ -59,8 +59,8 @@ export function TopNav() {
                 aria-current={active ? "page" : undefined}
                 className={`relative px-4 py-5 text-sm transition-colors ${
                   active
-                    ? "text-gold-500"
-                    : "text-fog-300 hover:text-ivory-100"
+                    ? "text-burgundy-700"
+                    : "text-charcoal-700 hover:text-navy-950"
                 }`}
               >
                 {item.label}
@@ -82,7 +82,7 @@ export function TopNav() {
               Search applications
             </label>
             <div className="relative">
-              <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-fog-500">
+              <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-700">
                 <Icon name="search" className="size-4" />
               </span>
               <input
@@ -90,28 +90,28 @@ export function TopNav() {
                 name="q"
                 type="search"
                 placeholder="Search applications"
-                className="w-56 rounded-md border border-hairline bg-ink-850 py-2 pl-9 pr-3 text-sm text-ivory-100 placeholder:text-fog-500 focus:border-gold-600 focus:outline-none"
+                className="w-56 rounded-md border border-stone-200 bg-mist-100 py-2 pl-9 pr-3 text-sm text-charcoal-900 placeholder:text-slate-700 focus:border-navy-700 focus:outline-none"
               />
             </div>
           </form>
 
           {/* Section 35.1 — classification stays visible on operational surfaces. */}
-          <span className="hidden rounded-sm border border-hairline px-2 py-1 text-[10px] uppercase tracking-[0.14em] text-fog-500 sm:inline">
+          <span className="hidden rounded-sm border border-stone-200 px-2 py-1 text-[10px] uppercase tracking-[0.14em] text-slate-700 sm:inline">
             Internal
           </span>
 
           <div className="flex items-center gap-3">
             <span
-              className="grid size-9 place-items-center rounded-full bg-burgundy-700 text-xs font-semibold text-ivory-100"
+              className="grid size-9 place-items-center rounded-full bg-burgundy-700 text-xs font-semibold text-white"
               aria-hidden
             >
               {DEMO_USER.initials}
             </span>
             <span className="hidden leading-tight xl:block">
-              <span className="block text-sm text-ivory-100">
+              <span className="block text-sm text-charcoal-900">
                 {DEMO_USER.name}
               </span>
-              <span className="block text-xs text-fog-500">
+              <span className="block text-xs text-slate-700">
                 {DEMO_USER.role}
               </span>
             </span>

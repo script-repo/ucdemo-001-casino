@@ -569,6 +569,62 @@ export function LtvApp() {
               </p>
             </div>
 
+            <div className="rounded-lg border border-stone-200 bg-white p-5">
+              <h3 className="font-serif text-xl text-navy-900">
+                Recent scoring runs
+              </h3>
+              <p className="mt-1 text-sm text-charcoal-700">
+                Failed runs preserve the last valid score set instead of
+                publishing partial results.
+              </p>
+              <div className="mt-4 overflow-x-auto">
+                <table className="w-full min-w-[42rem] text-left text-sm">
+                  <thead>
+                    <tr className="border-y border-stone-200 text-[11px] uppercase tracking-wide text-charcoal-700">
+                      <th className="py-2 pr-4 font-semibold">Run</th>
+                      <th className="py-2 pr-4 font-semibold">Status</th>
+                      <th className="py-2 pr-4 font-semibold">Finished</th>
+                      <th className="py-2 pr-4 text-right font-semibold">
+                        Scored
+                      </th>
+                      <th className="py-2 text-right font-semibold">Skipped</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {health.recentRuns.map((run) => (
+                      <tr key={run.runId} className="border-b border-stone-200">
+                        <td className="py-3 pr-4 font-mono text-xs text-navy-900">
+                          {run.runId}
+                        </td>
+                        <td className="py-3 pr-4">
+                          <span
+                            className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                              run.status === "healthy"
+                                ? "bg-success/15 text-success-dark"
+                                : run.status === "failed"
+                                  ? "bg-critical/15 text-burgundy-700"
+                                  : "bg-warning/15 text-bronze-700"
+                            }`}
+                          >
+                            {run.status}
+                          </span>
+                        </td>
+                        <td className="py-3 pr-4 text-charcoal-700">
+                          {run.finishedAt ? formatWhen(run.finishedAt) : "Running"}
+                        </td>
+                        <td className="tabular py-3 pr-4 text-right text-charcoal-900">
+                          {run.recordsScored.toLocaleString()}
+                        </td>
+                        <td className="tabular py-3 text-right text-charcoal-700">
+                          {run.recordsSkipped.toLocaleString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
             {summary && (
               <div className="rounded-lg border border-stone-200 bg-white p-5">
                 <h3 className="font-serif text-lg text-navy-900">Portfolio snapshot</h3>

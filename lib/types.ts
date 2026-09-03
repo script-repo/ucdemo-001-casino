@@ -49,4 +49,8 @@ export interface SharedResourceStatus {
   resource: SharedResource;
   configured: boolean;
   missing: string[];
+  /** Variables present in the pod environment (values are never exposed). */
+  environmentVariables: string[];
+  /** Variables present in the Kubernetes settings Secret (names only). */
+  storedVariables: string[];
 }

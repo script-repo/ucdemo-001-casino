@@ -19,32 +19,32 @@ export default async function ResourcesPage() {
   return (
     <div className="mx-auto max-w-[1100px] space-y-8 px-6 py-10">
       {/* Section 10.5 — breadcrumbs below the header for pages deeper than two levels. */}
-      <nav aria-label="Breadcrumb" className="text-xs text-fog-500">
-        <Link href="/" className="hover:text-ivory-100">
+      <nav aria-label="Breadcrumb" className="text-xs text-charcoal-700">
+        <Link href="/" className="hover:text-navy-900">
           Dashboard
         </Link>
         <span className="px-2" aria-hidden>
           /
         </span>
-        <span className="text-fog-300">Shared resources</span>
+        <span className="text-charcoal-700">Shared resources</span>
       </nav>
 
       <section>
         <div className="gold-rule" aria-hidden />
-        <h1 className="mt-4 font-serif text-3xl text-ivory-100">
+        <h1 className="mt-4 font-serif text-3xl text-navy-900">
           Shared resources
         </h1>
-        <p className="mt-3 max-w-[70ch] leading-relaxed text-fog-300">
+        <p className="mt-3 max-w-[70ch] leading-relaxed text-charcoal-700">
           Infrastructure every application may depend on. Configuration is
-          supplied by the environment; only whether a variable is set is ever
-          displayed, never its value. Reference documentation for each resource
-          lives under{" "}
-          <code className="font-mono text-sm text-ivory-100">
+          supplied by the deployment or saved to the namespace Secret. Values
+          are write-only: this page displays their source and status, never the
+          value. Reference documentation for each resource lives under{" "}
+          <code className="font-mono text-sm text-navy-900">
             shared-resources/
           </code>
           .
         </p>
-        <p className="tabular mt-4 text-xs text-fog-500">
+        <p className="tabular mt-4 text-xs text-charcoal-700">
           {configured.length} of {resourceStatuses.length} configured in this
           environment
         </p>

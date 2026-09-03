@@ -12,6 +12,7 @@ import {
   getModel,
   getPlayer,
   getRun,
+  getRunHistory,
   getStaleHours,
   getSummary,
   hoursSinceScore,
@@ -36,6 +37,7 @@ export type PlayerDetailPayload = {
 
 export type HealthPayload = {
   run: ScoringRun;
+  recentRuns: ScoringRun[];
   model: ModelInfo;
   hoursSinceScore: number;
   staleThresholdHours: number;
@@ -48,6 +50,7 @@ export async function fetchHealth(): Promise<HealthPayload> {
   const hours = hoursSinceScore(run.scoredAt);
   return {
     run,
+    recentRuns: getRunHistory(),
     model: getModel(),
     hoursSinceScore: hours,
     staleThresholdHours: getStaleHours(),

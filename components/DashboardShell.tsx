@@ -41,7 +41,7 @@ const STATUS_LABEL: Record<UseCaseStatus, string> = {
 const STATUS_DOT: Record<UseCaseStatus, string> = {
   active: "bg-success",
   beta: "bg-information",
-  planned: "bg-fog-500",
+  planned: "bg-slate-700",
   retired: "bg-critical",
 };
 
@@ -122,8 +122,8 @@ export function DashboardShell({
     <div className="mx-auto flex max-w-[1680px] gap-6 px-6 py-6">
       {/* ---------------- Category rail ---------------- */}
       <aside className="hidden w-60 shrink-0 xl:block">
-        <nav aria-label="Browse by category" className="rounded-lg border border-hairline bg-ink-850 p-4">
-          <p className="px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-fog-500">
+        <nav aria-label="Browse by category" className="rounded-lg border border-stone-200 bg-white p-4">
+          <p className="px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-700">
             Browse by category
           </p>
           <ul className="mt-3 space-y-1">
@@ -137,16 +137,16 @@ export function DashboardShell({
                     aria-pressed={selected}
                     className={`flex w-full items-center gap-3 rounded-md px-2 py-2 text-left text-sm transition-colors ${
                       selected
-                        ? "bg-ink-750 text-ivory-100"
-                        : "text-fog-300 hover:bg-ink-800 hover:text-ivory-100"
+                        ? "bg-mist-100 text-navy-950"
+                        : "text-charcoal-700 hover:bg-mist-100 hover:text-navy-950"
                     }`}
                   >
                     <Icon
                       name={CATEGORY_ICON[entry.name] ?? "grid"}
-                      className={`size-4 ${selected ? "text-gold-500" : "text-fog-500"}`}
+                      className={`size-4 ${selected ? "text-burgundy-700" : "text-slate-700"}`}
                     />
                     <span className="flex-1 truncate">{entry.name}</span>
-                    <span className="tabular text-xs text-fog-500">
+                    <span className="tabular text-xs text-slate-700">
                       {entry.count}
                     </span>
                   </button>
@@ -155,7 +155,7 @@ export function DashboardShell({
             })}
           </ul>
 
-          <p className="mt-6 px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-fog-500">
+          <p className="mt-6 px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-700">
             Quick filters
           </p>
           <button
@@ -164,33 +164,33 @@ export function DashboardShell({
             aria-pressed={favouritesOnly}
             className={`mt-3 flex w-full items-center gap-3 rounded-md px-2 py-2 text-left text-sm transition-colors ${
               favouritesOnly
-                ? "bg-ink-750 text-ivory-100"
-                : "text-fog-300 hover:bg-ink-800 hover:text-ivory-100"
+                ? "bg-mist-100 text-navy-950"
+                : "text-charcoal-700 hover:bg-mist-100 hover:text-navy-950"
             }`}
           >
             <Icon
               name="star"
-              className={`size-4 ${favouritesOnly ? "text-gold-500" : "text-fog-500"}`}
+              className={`size-4 ${favouritesOnly ? "text-burgundy-700" : "text-slate-700"}`}
             />
             <span className="flex-1">My favourites</span>
-            <span className="tabular text-xs text-fog-500">
+            <span className="tabular text-xs text-slate-700">
               {favourites.length}
             </span>
           </button>
         </nav>
 
-        <div className="mt-4 rounded-lg border border-hairline bg-ink-850 p-5">
-          <Icon name="crown" className="size-5 text-gold-500" />
-          <p className="mt-3 font-serif text-base text-ivory-100">
+        <div className="mt-4 rounded-lg border border-stone-200 bg-mist-100 p-5">
+          <Icon name="crown" className="size-5 text-burgundy-700" />
+          <p className="mt-3 font-serif text-base text-navy-950">
             Need help getting started?
           </p>
-          <p className="mt-2 text-xs leading-relaxed text-fog-300">
+          <p className="mt-2 text-xs leading-relaxed text-charcoal-700">
             Every application shares the same infrastructure. Check what is
             wired up before you build against it.
           </p>
           <Link
             href="/resources"
-            className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-gold-500 hover:text-gold-300"
+            className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-burgundy-700 hover:text-burgundy-900"
           >
             View shared resources
             <Icon name="arrowRight" className="size-3.5" />
@@ -200,25 +200,25 @@ export function DashboardShell({
 
       {/* ---------------- Main column ---------------- */}
       <main className="min-w-0 flex-1">
-        <section className="hero-motif overflow-hidden rounded-t-lg border border-hairline px-8 py-12 md:px-12 md:py-16">
-          <h1 className="max-w-[18ch] font-serif text-4xl leading-tight text-ivory-100 md:text-5xl">
+        <section className="hero-motif overflow-hidden rounded-t-lg border border-stone-200 px-8 py-12 md:px-12 md:py-16">
+          <h1 className="max-w-[18ch] font-serif text-4xl leading-tight text-navy-950 md:text-5xl">
             AI Workspace for Casino &amp; Resort Operations
           </h1>
-          <p className="mt-5 max-w-[58ch] leading-relaxed text-fog-300">
+          <p className="mt-5 max-w-[58ch] leading-relaxed text-charcoal-700">
             Securely access AI-powered tools, insights, and workflows that drive
             revenue, delight guests, and manage risk responsibly.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <a
               href="#applications"
-              className="inline-flex items-center gap-2 rounded-md bg-gold-500 px-5 py-2.5 text-sm font-semibold text-ink-950 transition-colors hover:bg-gold-300"
+              className="inline-flex items-center gap-2 rounded-md bg-burgundy-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-burgundy-900"
             >
               Explore applications
               <Icon name="arrowRight" className="size-4" />
             </a>
             <Link
               href="/resources"
-              className="inline-flex items-center gap-2 rounded-md border border-hairline-strong px-5 py-2.5 text-sm font-semibold text-ivory-100 transition-colors hover:border-gold-600"
+              className="inline-flex items-center gap-2 rounded-md border border-navy-700 bg-white px-5 py-2.5 text-sm font-semibold text-navy-950 transition-colors hover:bg-white/60"
             >
               View shared resources
             </Link>
@@ -228,14 +228,14 @@ export function DashboardShell({
         {/* Headline metrics. Placeholder figures — see lib/demo-content.ts. */}
         <section
           aria-label="Headline metrics"
-          className="grid grid-cols-2 gap-px overflow-hidden rounded-b-lg border border-t-0 border-hairline bg-hairline lg:grid-cols-4"
+          className="grid grid-cols-2 gap-px overflow-hidden rounded-b-lg border border-t-0 border-stone-200 bg-stone-200 lg:grid-cols-4"
         >
           {HEADLINE_METRICS.map((metric) => (
-            <div key={metric.label} className="flex items-center gap-4 bg-burgundy-800 px-6 py-5">
-              <Icon name={metric.icon} className="size-6 shrink-0 text-gold-500" />
+            <div key={metric.label} className="flex items-center gap-4 bg-white px-6 py-5">
+              <Icon name={metric.icon} className="size-6 shrink-0 text-burgundy-700" />
               <div className="min-w-0">
-                <p className="text-xs text-fog-300">{metric.label}</p>
-                <p className="tabular mt-0.5 text-xl font-semibold text-ivory-100">
+                <p className="text-xs text-charcoal-700">{metric.label}</p>
+                <p className="tabular mt-0.5 text-xl font-semibold text-navy-950">
                   {metric.value}
                 </p>
                 <p className="tabular text-[11px] text-success">
@@ -248,9 +248,9 @@ export function DashboardShell({
 
         {/* ---------------- Applications ---------------- */}
         <section id="applications" className="mt-8 scroll-mt-20">
-          <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-hairline pb-3">
-            <h2 className="font-serif text-2xl text-ivory-100">Applications</h2>
-            <p className="text-xs text-fog-500">
+          <div className="flex flex-wrap items-baseline justify-between gap-3 border-b border-stone-200 pb-3">
+            <h2 className="font-serif text-2xl text-navy-950">Applications</h2>
+            <p className="text-xs text-slate-700">
               {visible.length === useCases.length
                 ? `${useCases.length} registered`
                 : `${visible.length} of ${useCases.length} shown`}
@@ -259,11 +259,11 @@ export function DashboardShell({
           </div>
 
           {visible.length === 0 ? (
-            <div className="mt-6 rounded-lg border border-dashed border-hairline bg-ink-850 p-10 text-center">
-              <p className="font-serif text-lg text-ivory-100">
+            <div className="mt-6 rounded-lg border border-dashed border-stone-200 bg-mist-100 p-10 text-center">
+              <p className="font-serif text-lg text-navy-950">
                 Nothing matches this filter
               </p>
-              <p className="mx-auto mt-2 max-w-[55ch] text-sm text-fog-300">
+              <p className="mx-auto mt-2 max-w-[55ch] text-sm text-charcoal-700">
                 {useCases.length === 0
                   ? "Applications appear here automatically once a folder exists under use-cases/. Scaffold one with npm run new:use-case <slug>."
                   : "Clear the category or favourites filter, or search for something else."}
@@ -277,7 +277,7 @@ export function DashboardShell({
                   <li key={useCase.slug} className="relative">
                     <Link
                       href={`/use-cases/${useCase.slug}`}
-                      className="block h-full rounded-lg border border-hairline bg-ink-800 p-6 transition-colors hover:border-hairline-strong hover:bg-ink-750"
+                      className="block h-full rounded-lg border border-stone-200 bg-white p-6 transition-colors hover:border-navy-700 hover:bg-mist-100"
                     >
                       <span
                         className={`grid size-12 place-items-center rounded-lg text-gold-300 ${
@@ -287,20 +287,20 @@ export function DashboardShell({
                         <Icon name={iconFor(useCase.icon)} className="size-6" />
                       </span>
 
-                      <h3 className="mt-5 pr-8 text-base font-semibold text-ivory-100">
+                      <h3 className="mt-5 pr-8 text-base font-semibold text-navy-950">
                         {useCase.title}
                       </h3>
-                      <p className="mt-2 text-sm leading-relaxed text-fog-300">
+                      <p className="mt-2 text-sm leading-relaxed text-charcoal-700">
                         {useCase.summary}
                       </p>
 
                       <span className="mt-5 flex flex-wrap items-center gap-2">
                         {useCase.tags[0] && (
-                          <span className="rounded-full bg-ink-950 px-2.5 py-1 text-[11px] text-fog-300">
+                          <span className="rounded-full bg-mist-100 px-2.5 py-1 text-[11px] text-charcoal-700">
                             {useCase.tags[0]}
                           </span>
                         )}
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-hairline px-2.5 py-1 text-[11px] text-fog-300">
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-stone-200 px-2.5 py-1 text-[11px] text-charcoal-700">
                           <span
                             className={`size-1.5 rounded-full ${STATUS_DOT[useCase.status]}`}
                             aria-hidden
@@ -320,7 +320,7 @@ export function DashboardShell({
                       className={`absolute right-4 top-4 rounded-md p-1.5 transition-colors ${
                         favourite
                           ? "text-gold-500"
-                          : "text-fog-500 hover:text-ivory-100"
+                          : "text-slate-700 hover:text-burgundy-700"
                       }`}
                     >
                       <Icon name="star" className="size-4" />
@@ -335,17 +335,17 @@ export function DashboardShell({
 
       {/* ---------------- Right rail ---------------- */}
       <aside className="hidden w-80 shrink-0 space-y-4 2xl:block">
-        <section className="rounded-lg border border-hairline bg-ink-850 p-5">
-          <h2 className="text-sm font-semibold text-ivory-100">Recent activity</h2>
+        <section className="rounded-lg border border-stone-200 bg-white p-5">
+          <h2 className="text-sm font-semibold text-navy-950">Recent activity</h2>
           <ul className="mt-4 space-y-3">
             {RECENT_ACTIVITY.map((item) => (
               <li key={item.text} className="flex gap-3">
-                <Icon name={item.icon} className="mt-0.5 size-4 shrink-0 text-fog-500" />
+                <Icon name={item.icon} className="mt-0.5 size-4 shrink-0 text-slate-700" />
                 <span className="min-w-0 flex-1">
-                  <span className="block text-xs leading-relaxed text-fog-300">
+                  <span className="block text-xs leading-relaxed text-charcoal-700">
                     {item.text}
                   </span>
-                  <span className="block text-[11px] text-fog-500">
+                  <span className="block text-[11px] text-slate-700">
                     {item.when}
                   </span>
                 </span>
@@ -354,17 +354,17 @@ export function DashboardShell({
           </ul>
         </section>
 
-        <section className="rounded-lg border border-hairline bg-ink-850 p-5">
-          <h2 className="text-sm font-semibold text-ivory-100">Featured insight</h2>
+        <section className="rounded-lg border border-stone-200 bg-white p-5">
+          <h2 className="text-sm font-semibold text-navy-950">Featured insight</h2>
           <ul className="mt-4 space-y-3">
             {FEATURED_INSIGHTS.map((item) => (
               <li key={item.title} className="flex gap-3">
                 <Icon name="fileText" className="mt-0.5 size-4 shrink-0 text-gold-500" />
                 <span className="min-w-0 flex-1">
-                  <span className="block text-xs leading-relaxed text-ivory-100">
+                  <span className="block text-xs leading-relaxed text-charcoal-900">
                     {item.title}
                   </span>
-                  <span className="block text-[11px] text-fog-500">
+                  <span className="block text-[11px] text-slate-700">
                     {item.when}
                   </span>
                 </span>
@@ -374,8 +374,8 @@ export function DashboardShell({
         </section>
 
         {/* The only rail panel driven by live state. */}
-        <section className="rounded-lg border border-hairline bg-ink-850 p-5">
-          <h2 className="text-sm font-semibold text-ivory-100">
+        <section className="rounded-lg border border-stone-200 bg-white p-5">
+          <h2 className="text-sm font-semibold text-navy-950">
             Governance &amp; access
           </h2>
           <div className="mt-4 flex items-center gap-4">
@@ -389,33 +389,33 @@ export function DashboardShell({
                   : "text-warning"
               }`}
             />
-            <p className="text-xs leading-relaxed text-fog-300">
+            <p className="text-xs leading-relaxed text-charcoal-700">
               {resourcesConfigured} of {resourcesTotal} shared resources are
               configured for this environment.
             </p>
           </div>
           <Link
             href="/resources"
-            className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-gold-500 hover:text-gold-300"
+            className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-burgundy-700 hover:text-burgundy-900"
           >
             Review configuration
             <Icon name="arrowRight" className="size-3.5" />
           </Link>
         </section>
 
-        <section className="rounded-lg border border-hairline bg-ink-850 p-5">
-          <h2 className="text-sm font-semibold text-ivory-100">Quick actions</h2>
+        <section className="rounded-lg border border-stone-200 bg-white p-5">
+          <h2 className="text-sm font-semibold text-navy-950">Quick actions</h2>
           <div className="mt-4 grid grid-cols-2 gap-3">
             <a
               href="#applications"
-              className="flex flex-col items-center gap-2 rounded-md border border-hairline px-3 py-4 text-center text-[11px] text-fog-300 transition-colors hover:border-gold-600 hover:text-ivory-100"
+              className="flex flex-col items-center gap-2 rounded-md border border-stone-200 px-3 py-4 text-center text-[11px] text-charcoal-700 transition-colors hover:border-navy-700 hover:text-navy-950"
             >
               <Icon name="grid" className="size-4" />
               Browse applications
             </a>
             <Link
               href="/resources"
-              className="flex flex-col items-center gap-2 rounded-md border border-hairline px-3 py-4 text-center text-[11px] text-fog-300 transition-colors hover:border-gold-600 hover:text-ivory-100"
+              className="flex flex-col items-center gap-2 rounded-md border border-stone-200 px-3 py-4 text-center text-[11px] text-charcoal-700 transition-colors hover:border-navy-700 hover:text-navy-950"
             >
               <Icon name="workflow" className="size-4" />
               Shared resources
@@ -423,7 +423,7 @@ export function DashboardShell({
           </div>
         </section>
 
-        <p className="px-1 text-[11px] leading-relaxed text-fog-500">
+        <p className="px-1 text-[11px] leading-relaxed text-slate-700">
           Headline metrics, recent activity, and featured insight show
           demonstration data. Application and resource panels are live.
         </p>

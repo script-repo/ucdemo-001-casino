@@ -45,8 +45,21 @@ function daysAgo(n: number): string {
   return d.toISOString().slice(0, 10);
 }
 
-const TIERS: Tier[] = ["platinum", "gold", "silver", "bronze"];
 const HOSTS = ["H-104", "H-118", "H-122", "H-131", "H-140", "unassigned"];
+
+function weightedTier(): Tier {
+  const roll = rand();
+  if (roll < 0.06) return "platinum";
+  if (roll < 0.24) return "gold";
+  if (roll < 0.58) return "silver";
+  return "bronze";
+}
+
+function weightedHost(): string {
+  const roll = rand();
+  if (roll > 0.92) return "unassigned";
+  return HOSTS[Math.floor(roll * (HOSTS.length - 1))]!;
+}
 
 function buildDrivers(trend: Trend, tier: Tier): Driver[] {
   const poolUp: Driver[] = [
@@ -81,7 +94,7 @@ function buildDrivers(trend: Trend, tier: Tier): Driver[] {
     {
       feature: "trip_length",
       contribution: 80 + rand() * 160,
-      text: "Average trip length lengthened",
+      text: "Average trip length increased",
       direction: "up",
       period: "Last 6 months",
     },
@@ -136,17 +149,24 @@ function buildDrivers(trend: Trend, tier: Tier): Driver[] {
 
 function buildPlayers(): PlayerScore[] {
   const players: PlayerScore[] = [];
-  const n = 120;
+  const n = 5_000;
 
   for (let i = 0; i < n; i++) {
     const playerId = 100100 + i;
-    const visitCount = i % 17 === 0 ? 1 + Math.floor(rand() * 2) : 3 + Math.floor(rand() * 40);
+    const visitCount =
+      i % 23 === 0
+        ? 1 + Math.floor(rand() * 2)
+        : 3 + Math.floor(rand() * 55);
     const insufficient = visitCount < 3;
-    const tier = pick(TIERS);
-    const hostId = pick(HOSTS);
+    const tier = weightedTier();
+    const hostId = weightedHost();
     const activityRoll = rand();
     const activity =
-      activityRoll > 0.85 ? "lapsed" : activityRoll > 0.92 ? "new" : "active";
+      activityRoll > 0.92
+        ? "new"
+        : activityRoll > 0.74
+          ? "lapsed"
+          : "active";
 
     if (insufficient) {
       players.push({
@@ -284,6 +304,57 @@ export const CURRENT_RUN: ScoringRun = {
   ],
 };
 
+const RECENT_RUNS: ScoringRun[] = [
+  CURRENT_RUN,
+  {
+    ...CURRENT_RUN,
+    runId: "ltv-score-20260805-0200",
+    status: "failed",
+    startedAt: "2026-08-05T01:42:00-07:00",
+    finishedAt: "2026-08-05T01:51:00-07:00",
+    scoredAt: "2026-08-04T02:00:00-07:00",
+    recordsScored: 0,
+    recordsSkipped: PLAYERS.length,
+    stages: [
+      {
+        name: "Source extraction",
+        status: "ok",
+        detail: "cms_raw snapshots loaded",
+      },
+      {
+        name: "Feature creation",
+        status: "fail",
+        detail: "Trip aggregate validation exceeded the null threshold",
+      },
+      {
+        name: "Atomic publish",
+        status: "skip",
+        detail: "Previous valid score set remained active",
+      },
+    ],
+  },
+  {
+    ...CURRENT_RUN,
+    runId: "ltv-score-20260804-0200",
+    status: "stale",
+    startedAt: "2026-08-04T01:42:00-07:00",
+    finishedAt: "2026-08-04T02:04:00-07:00",
+    scoredAt: "2026-08-04T02:04:00-07:00",
+    stages: [
+      {
+        name: "Scoring",
+        status: "warn",
+        detail: "Completed after the expected freshness window",
+      },
+      {
+        name: "Atomic publish",
+        status: "ok",
+        detail: "Score set published at 02:04",
+      },
+    ],
+  },
+];
+
 export const CURRENT_MODEL: ModelInfo = {
   modelVersion: MODEL_VERSION,
   modelLabel: MODEL_LABEL,
@@ -405,6 +476,10 @@ export function getModel(): ModelInfo {
 
 export function getRun(): ScoringRun {
   return CURRENT_RUN;
+}
+
+export function getRunHistory(): ScoringRun[] {
+  return RECENT_RUNS;
 }
 
 export function getSummary(): PortfolioSummary {

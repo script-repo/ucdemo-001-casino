@@ -21,6 +21,7 @@ spec:
         app.kubernetes.io/name: casino-ai-portal
         app.kubernetes.io/component: frontend
     spec:
+      serviceAccountName: casino-ai-portal
       securityContext:
         runAsNonRoot: true
         runAsUser: 1001
@@ -42,6 +43,10 @@ spec:
               value: "3000"
             - name: HOSTNAME
               value: 0.0.0.0
+            - name: NODE_EXTRA_CA_CERTS
+              value: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+            - name: SHARED_RESOURCE_SETTINGS_SECRET
+              value: shared-resource-settings
           envFrom:
             - configMapRef:
                 name: portal-config

@@ -40,8 +40,25 @@ reconcile.
 - Two replicas
 - NodePort `30007`
 - No PVC: application files are inside the image
-- No secret injection: the frontend does not call database or inference APIs
 - Non-secret environment metadata comes from `portal-config`
+- A restricted ServiceAccount may read and patch only
+  `shared-resource-settings`; it cannot list, create, or delete Secrets
+
+## Shared-resource settings
+
+The resources page can save write-only values into the
+`shared-resource-settings` Secret. Flux creates the metadata-only object using
+merge-style server-side apply, so reconciliation does not erase keys written by
+the portal.
+
+Values are not injected into the frontend process and are never returned to the
+browser. The server reads key names directly from the Kubernetes API to report
+configured status.
+
+This lab deployment deliberately has no user authentication. Anyone who can
+reach NodePort `30007` can replace or clear allowlisted resource settings. The
+Kubernetes Role limits the blast radius to one named Secret, but it does not
+make the endpoint authenticated.
 
 The NodePort is reachable at port `30007` on any NKP node IP.
 
