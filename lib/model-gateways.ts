@@ -20,6 +20,11 @@ function endpoint(base: string, path: string) {
   return `${base.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
 }
 
+function normalizeOpenRouterKey(value: string) {
+  const key = value.trim().replace(/^Bearer\s+/i, "");
+  return /^[a-f0-9]{64}$/i.test(key) ? `sk-or-v1-${key}` : key;
+}
+
 function errorForStatus(status: number) {
   if (status === 401 || status === 403) return "Authentication failed.";
   if (status === 404) return "Endpoint does not expose the expected API path.";
@@ -53,13 +58,20 @@ export async function testModelGateway(resourceId: string): Promise<{
     if (!settings.OPENROUTER_API_KEY) {
       throw new Error("Save an OpenRouter API key before testing.");
     }
-    const result = await listModels(
-      OPENROUTER_BASE_URL,
-      settings.OPENROUTER_API_KEY,
-    );
+    const apiKey = normalizeOpenRouterKey(settings.OPENROUTER_API_KEY);
+    const started = Date.now();
+    const authentication = await fetch(endpoint(OPENROUTER_BASE_URL, "key"), {
+      headers: { Authorization: `Bearer ${apiKey}` },
+      signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
+      cache: "no-store",
+    });
+    if (!authentication.ok) {
+      throw new Error(errorForStatus(authentication.status));
+    }
+    const result = await listModels(OPENROUTER_BASE_URL, apiKey);
     return {
       message: "OpenRouter authentication succeeded.",
-      latencyMs: result.latencyMs,
+      latencyMs: Date.now() - started,
       modelCount: result.models.length,
     };
   }
@@ -99,7 +111,7 @@ async function resolveChatGateway(): Promise<{
     return {
       provider: "OpenRouter",
       baseUrl: OPENROUTER_BASE_URL,
-      apiKey: settings.OPENROUTER_API_KEY,
+      apiKey: normalizeOpenRouterKey(settings.OPENROUTER_API_KEY),
       model:
         settings.OPENROUTER_CHAT_MODEL || DEFAULT_OPENROUTER_MODEL,
     };
