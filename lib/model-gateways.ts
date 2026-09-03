@@ -1,6 +1,9 @@
 import "server-only";
 
-import { getSettingValues } from "@/lib/kubernetes-settings";
+import {
+  getSettingValues,
+  patchStoredSettings,
+} from "@/lib/kubernetes-settings";
 
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 const DEFAULT_OPENROUTER_MODEL =
@@ -14,6 +17,13 @@ type ModelsResponse = {
 type ChatResponse = {
   choices?: Array<{ message?: { content?: string } }>;
   error?: { message?: string };
+};
+
+type ChatGateway = {
+  provider: string;
+  baseUrl: string;
+  apiKey: string;
+  model: string;
 };
 
 function endpoint(base: string, path: string) {
@@ -52,9 +62,14 @@ export async function testModelGateway(resourceId: string): Promise<{
   message: string;
   latencyMs: number;
   modelCount: number;
+  models: string[];
+  selectedModel: string | null;
 }> {
   if (resourceId === "openrouter") {
-    const settings = await getSettingValues(["OPENROUTER_API_KEY"]);
+    const settings = await getSettingValues([
+      "OPENROUTER_API_KEY",
+      "OPENROUTER_MODEL",
+    ]);
     if (!settings.OPENROUTER_API_KEY) {
       throw new Error("Save an OpenRouter API key before testing.");
     }
@@ -73,11 +88,19 @@ export async function testModelGateway(resourceId: string): Promise<{
       message: "OpenRouter authentication succeeded.",
       latencyMs: Date.now() - started,
       modelCount: result.models.length,
+      models: result.models.sort(),
+      selectedModel: result.models.includes(settings.OPENROUTER_MODEL)
+        ? settings.OPENROUTER_MODEL
+        : null,
     };
   }
 
   if (resourceId === "nutanix-enterprise-ai") {
-    const settings = await getSettingValues(["NAI_ENDPOINT", "NAI_API_KEY"]);
+    const settings = await getSettingValues([
+      "NAI_ENDPOINT",
+      "NAI_API_KEY",
+      "NAI_MODEL",
+    ]);
     if (!settings.NAI_ENDPOINT || !settings.NAI_API_KEY) {
       throw new Error(
         "Save the Nutanix Enterprise AI endpoint and API key before testing.",
@@ -88,50 +111,83 @@ export async function testModelGateway(resourceId: string): Promise<{
       message: "Nutanix Enterprise AI authentication succeeded.",
       latencyMs: result.latencyMs,
       modelCount: result.models.length,
+      models: result.models.sort(),
+      selectedModel: result.models.includes(settings.NAI_MODEL)
+        ? settings.NAI_MODEL
+        : null,
     };
   }
 
   throw new Error("This shared resource does not support a connection test.");
 }
 
-async function resolveChatGateway(): Promise<{
-  provider: string;
-  baseUrl: string;
-  apiKey: string;
-  model: string;
-}> {
+export async function selectModelGateway(
+  resourceId: string,
+  model: string,
+): Promise<{ selectedModel: string }> {
+  const result = await testModelGateway(resourceId);
+  if (!result.models.includes(model)) {
+    throw new Error("Select a model returned by the authenticated gateway.");
+  }
+  const variable =
+    resourceId === "nutanix-enterprise-ai" ? "NAI_MODEL" : "OPENROUTER_MODEL";
+  await patchStoredSettings({ set: { [variable]: model }, clear: [] });
+  return { selectedModel: model };
+}
+
+async function resolveChatGateways(): Promise<ChatGateway[]> {
   const settings = await getSettingValues([
     "OPENROUTER_API_KEY",
+    "OPENROUTER_MODEL",
     "OPENROUTER_CHAT_MODEL",
     "NAI_ENDPOINT",
     "NAI_API_KEY",
+    "NAI_MODEL",
   ]);
+  const gateways: ChatGateway[] = [];
+  const setupErrors: string[] = [];
+
+  // Nutanix Enterprise AI is intentionally first. OpenRouter is the fallback.
+  if (settings.NAI_ENDPOINT && settings.NAI_API_KEY) {
+    try {
+      const available = await listModels(
+        settings.NAI_ENDPOINT,
+        settings.NAI_API_KEY,
+      );
+      const model = available.models.includes(settings.NAI_MODEL)
+        ? settings.NAI_MODEL
+        : available.models[0];
+      if (!model) {
+        throw new Error("No available models were returned.");
+      }
+      gateways.push({
+        provider: "Nutanix Enterprise AI",
+        baseUrl: settings.NAI_ENDPOINT,
+        apiKey: settings.NAI_API_KEY,
+        model,
+      });
+    } catch (error) {
+      setupErrors.push(
+        `Nutanix Enterprise AI: ${error instanceof Error ? error.message : "unavailable"}`,
+      );
+    }
+  }
 
   if (settings.OPENROUTER_API_KEY) {
-    return {
+    gateways.push({
       provider: "OpenRouter",
       baseUrl: OPENROUTER_BASE_URL,
       apiKey: normalizeOpenRouterKey(settings.OPENROUTER_API_KEY),
       model:
-        settings.OPENROUTER_CHAT_MODEL || DEFAULT_OPENROUTER_MODEL,
-    };
+        settings.OPENROUTER_MODEL ||
+        settings.OPENROUTER_CHAT_MODEL ||
+        DEFAULT_OPENROUTER_MODEL,
+    });
   }
 
-  if (settings.NAI_ENDPOINT && settings.NAI_API_KEY) {
-    const available = await listModels(
-      settings.NAI_ENDPOINT,
-      settings.NAI_API_KEY,
-    );
-    const model = available.models[0];
-    if (!model) {
-      throw new Error("Nutanix Enterprise AI returned no available models.");
-    }
-    return {
-      provider: "Nutanix Enterprise AI",
-      baseUrl: settings.NAI_ENDPOINT,
-      apiKey: settings.NAI_API_KEY,
-      model,
-    };
+  if (gateways.length > 0) return gateways;
+  if (setupErrors.length > 0) {
+    throw new Error(setupErrors.join(" "));
   }
 
   throw new Error(
@@ -139,12 +195,7 @@ async function resolveChatGateway(): Promise<{
   );
 }
 
-export async function generateEpvBriefing(context: string): Promise<{
-  text: string;
-  provider: string;
-  model: string;
-}> {
-  const gateway = await resolveChatGateway();
+async function requestChat(gateway: ChatGateway, context: string) {
   const response = await fetch(endpoint(gateway.baseUrl, "chat/completions"), {
     method: "POST",
     headers: {
@@ -183,4 +234,23 @@ export async function generateEpvBriefing(context: string): Promise<{
     provider: gateway.provider,
     model: gateway.model,
   };
+}
+
+export async function generateEpvBriefing(context: string): Promise<{
+  text: string;
+  provider: string;
+  model: string;
+}> {
+  const gateways = await resolveChatGateways();
+  const failures: string[] = [];
+  for (const gateway of gateways) {
+    try {
+      return await requestChat(gateway, context);
+    } catch (error) {
+      failures.push(
+        `${gateway.provider}: ${error instanceof Error ? error.message : "unavailable"}`,
+      );
+    }
+  }
+  throw new Error(`No inference gateway succeeded. ${failures.join(" ")}`);
 }

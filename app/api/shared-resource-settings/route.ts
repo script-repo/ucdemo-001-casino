@@ -3,7 +3,10 @@ import {
   getStoredSettingNames,
   patchStoredSettings,
 } from "@/lib/kubernetes-settings";
-import { testModelGateway } from "@/lib/model-gateways";
+import {
+  selectModelGateway,
+  testModelGateway,
+} from "@/lib/model-gateways";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -53,20 +56,24 @@ export async function POST(request: Request) {
     return Response.json({ error: "Cross-origin request rejected." }, { status: 403 });
   }
 
-  let resourceId: unknown;
+  let payload: {
+    resourceId?: unknown;
+    operation?: unknown;
+    model?: unknown;
+  };
   try {
     const rawBody = await request.text();
     if (Buffer.byteLength(rawBody, "utf8") > 4 * 1024) {
       return Response.json({ error: "Request is too large." }, { status: 413 });
     }
-    resourceId = (JSON.parse(rawBody) as { resourceId?: unknown }).resourceId;
+    payload = JSON.parse(rawBody) as typeof payload;
   } catch {
     return Response.json({ error: "Invalid JSON." }, { status: 400 });
   }
 
   if (
-    resourceId !== "openrouter" &&
-    resourceId !== "nutanix-enterprise-ai"
+    payload.resourceId !== "openrouter" &&
+    payload.resourceId !== "nutanix-enterprise-ai"
   ) {
     return Response.json(
       { error: "This shared resource cannot be tested." },
@@ -75,7 +82,29 @@ export async function POST(request: Request) {
   }
 
   try {
-    return Response.json({ ok: true, ...(await testModelGateway(resourceId)) });
+    if (payload.operation === "select-model") {
+      if (
+        typeof payload.model !== "string" ||
+        !payload.model.trim() ||
+        payload.model.length > 300
+      ) {
+        return Response.json(
+          { error: "Select a valid model." },
+          { status: 400 },
+        );
+      }
+      return Response.json({
+        ok: true,
+        ...(await selectModelGateway(
+          payload.resourceId,
+          payload.model.trim(),
+        )),
+      });
+    }
+    return Response.json({
+      ok: true,
+      ...(await testModelGateway(payload.resourceId)),
+    });
   } catch (error) {
     return Response.json(
       {

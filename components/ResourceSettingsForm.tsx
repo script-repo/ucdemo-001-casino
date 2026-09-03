@@ -11,6 +11,8 @@ type ApiResult = {
   message?: string;
   latencyMs?: number;
   modelCount?: number;
+  models?: string[];
+  selectedModel?: string | null;
 };
 
 export function ResourceSettingsForm({
@@ -29,6 +31,8 @@ export function ResourceSettingsForm({
   const [stored, setStored] = useState(initialStored);
   const [pending, setPending] = useState(false);
   const [testing, setTesting] = useState(false);
+  const [models, setModels] = useState<string[]>([]);
+  const [selectedModel, setSelectedModel] = useState("");
   const [message, setMessage] = useState<{
     tone: "ok" | "error";
     text: string;
@@ -67,6 +71,8 @@ export function ResourceSettingsForm({
       }
       setStored(result.setVariables ?? []);
       setValues({});
+      setModels([]);
+      setSelectedModel("");
       setMessage({
         tone: "ok",
         text: body.clear ? "Setting cleared." : "Settings saved securely.",
@@ -100,6 +106,8 @@ export function ResourceSettingsForm({
         tone: "ok",
         text: `${result.message} ${result.modelCount ?? 0} models · ${result.latencyMs ?? 0} ms`,
       });
+      setModels(result.models ?? []);
+      setSelectedModel(result.selectedModel ?? "");
     } catch (error) {
       setMessage({
         tone: "error",
@@ -108,6 +116,39 @@ export function ResourceSettingsForm({
       });
     } finally {
       setTesting(false);
+    }
+  }
+
+  async function selectModel(model: string) {
+    setSelectedModel(model);
+    setPending(true);
+    setMessage(null);
+    try {
+      const response = await fetch("/api/shared-resource-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          resourceId,
+          operation: "select-model",
+          model,
+        }),
+      });
+      const result = (await response.json()) as ApiResult;
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error ?? "Model selection could not be saved.");
+      }
+      setSelectedModel(result.selectedModel ?? model);
+      setMessage({ tone: "ok", text: "Default inference model saved." });
+    } catch (error) {
+      setMessage({
+        tone: "error",
+        text:
+          error instanceof Error
+            ? error.message
+            : "Model selection could not be saved.",
+      });
+    } finally {
+      setPending(false);
     }
   }
 
@@ -194,6 +235,29 @@ export function ResourceSettingsForm({
           );
         })}
       </div>
+
+      {models.length > 0 && (
+        <label className="mt-4 block rounded-md border border-stone-200 bg-mist-100 p-3">
+          <span className="block text-xs font-semibold uppercase tracking-wide text-charcoal-700">
+            Default inference model
+          </span>
+          <select
+            value={selectedModel}
+            disabled={pending || testing}
+            onChange={(event) => void selectModel(event.target.value)}
+            className="mt-2 h-10 w-full rounded-md border border-stone-200 bg-white px-3 text-sm text-charcoal-900 focus:border-navy-700 focus:outline-none"
+          >
+            <option value="" disabled>
+              Select an available model
+            </option>
+            {models.map((model) => (
+              <option key={model} value={model}>
+                {model}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
 
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <button
