@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: portal-config
+data:
+  NKP_CLUSTER_NAME: nkp-cluster
+  NKP_API_SERVER: https://10.42.156.20:6443
+  NKP_NAMESPACE: db-project-001
+
+  PRISM_CENTRAL_ENDPOINT: https://10.42.156.7:9440
+  PRISM_CENTRAL_USERNAME: admin
+  PRISM_CENTRAL_INSECURE_TLS: "true"
+
+  OPENROUTER_BASE_URL: https://openrouter.ai/api/v1
+  OPENROUTER_CHAT_MODEL: nvidia/nemotron-3-super-120b-a12b:free
+  OPENROUTER_CHAT_MODEL_FAST: nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+  OPENROUTER_EMBEDDING_MODEL: nvidia/nemotron-3-embed-1b:free
+  OPENROUTER_EMBEDDING_DIMENSIONS: "2048"
+  OPENROUTER_RERANK_MODEL: nvidia/llama-nemotron-rerank-vl-1b-v2:free
+  OPENROUTER_MAX_TOKENS: "1536"
