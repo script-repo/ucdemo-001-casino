@@ -1,6 +1,6 @@
 "use client";
 
-import type { PlayerDetailPayload } from "../actions";
+import type { PlayerDetailPayload } from "../client-api";
 import {
   activityLabel,
   formatDate,

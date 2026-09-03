@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { HealthPayload } from "../actions";
+import type { HealthPayload } from "../client-api";
 import { formatWhen } from "../format";
 
 export function FreshnessBanner({ health }: { health: HealthPayload }) {

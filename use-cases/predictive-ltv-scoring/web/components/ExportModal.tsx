@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { ScoreFilters } from "../types";
-import { buildExport } from "../actions";
+import { buildExport } from "../client-api";
 
 export function ExportModal({
   filters,
