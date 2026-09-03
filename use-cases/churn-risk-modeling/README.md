@@ -3,7 +3,10 @@
 Flags players disengaging relative to their own established cadence, not against
 a fixed calendar window.
 
-**Status:** planned. Scaffolded UI only; no model or backend yet.
+**Status:** beta. The portal includes a deterministic synthetic pilot with a
+cadence-relative risk queue, player timelines, explanations, outreach capture,
+responsible-gaming suppression counts, and threshold previews. It remains
+UI-only until the casino data platform and trained model are deployed.
 
 Full design — outcomes, contracts, infrastructure, UI, flows, and API — is in
 [`DESIGN.md`](./DESIGN.md). This README is the summary.

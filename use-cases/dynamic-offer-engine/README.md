@@ -4,7 +4,10 @@ Recommends promotions tailored to segment, informed by LTV percentile and
 current churn band. Near real time — a proposal within minutes of a qualifying
 event during the visit.
 
-**Status:** planned. Scaffolded UI only; no backend yet.
+**Status:** beta. The portal includes a deterministic synthetic pilot with a
+live proposal queue, budget tracking, responsible-gaming gate reporting,
+offer editing, human review actions, and trigger-event simulation. Decisions
+remain browser-local until the backend and decision-log contract are deployed.
 
 Full design — outcomes, contracts, infrastructure, UI, flows, and API — is in
 [`DESIGN.md`](./DESIGN.md). This README is the summary.

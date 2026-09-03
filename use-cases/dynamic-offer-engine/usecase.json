@@ -3,13 +3,13 @@
   "slug": "dynamic-offer-engine",
   "title": "Dynamic Offer Engine",
   "summary": "Propose an offer within two minutes of a trigger event, sized by player value and churn risk, for a human to approve. Suppressed players never reach the queue.",
-  "status": "planned",
-  "owner": "unassigned",
+  "status": "beta",
+  "owner": "Marketing Operations",
   "tags": ["Promotions", "Personalization", "Real-time"],
   "category": "Marketing",
   "icon": "tag",
   "accent": "navy",
-  "resources": ["openrouter"],
+  "resources": ["nutanix-enterprise-ai", "openrouter"],
   "api": {
     "enabled": false,
     "baseUrlEnv": "DYNAMIC_OFFER_ENGINE_API_URL"
