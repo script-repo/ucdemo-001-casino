@@ -1,0 +1,23 @@
+{
+  "$schema": "../usecase.schema.json",
+  "slug": "predictive-ltv-scoring",
+  "title": "Expected Player Value",
+  "summary": "Estimate each player’s gaming and non-gaming value over the next twelve months, with plain-language drivers and cohort export for reinvestment review.",
+  "status": "beta",
+  "owner": "Player Development",
+  "tags": ["VIP Analytics", "Scoring", "Segmentation", "MVP"],
+  "category": "Finance",
+  "icon": "users",
+  "accent": "burgundy",
+  "resources": ["nkp", "casino-data-platform", "model-registry"],
+  "api": {
+    "enabled": false,
+    "baseUrlEnv": "PREDICTIVE_LTV_SCORING_API_URL"
+  },
+  "links": [
+    { "label": "Design", "href": "/use-cases/predictive-ltv-scoring/DESIGN.md" },
+    { "label": "UX spec", "href": "/use-cases/predictive-ltv-scoring/Predictive LTV Scoring detail.md" },
+    { "label": "Portfolio design", "href": "/docs/casino-uc-design.md" },
+    { "label": "Scope", "href": "/docs/casino-scope.md" }
+  ]
+}

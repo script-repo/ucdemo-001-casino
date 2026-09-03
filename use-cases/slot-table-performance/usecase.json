@@ -1,0 +1,22 @@
+{
+  "$schema": "../usecase.schema.json",
+  "slug": "slot-table-performance",
+  "title": "Slot & Table Performance",
+  "summary": "Compare each unit against comparable placements rather than the whole floor, so underperformance is attributable to the machine or theme instead of to foot traffic.",
+  "status": "planned",
+  "owner": "unassigned",
+  "tags": ["Gaming Ops", "Floor Layout", "Yield"],
+  "category": "Gaming & Ops",
+  "icon": "dice",
+  "accent": "emerald",
+  "resources": ["nkp", "casino-data-platform"],
+  "api": {
+    "enabled": false,
+    "baseUrlEnv": "SLOT_TABLE_PERFORMANCE_API_URL"
+  },
+  "links": [
+    { "label": "Design", "href": "/use-cases/slot-table-performance/DESIGN.md" },
+    { "label": "Portfolio design", "href": "/docs/casino-uc-design.md" },
+    { "label": "Scope", "href": "/docs/casino-scope.md" }
+  ]
+}

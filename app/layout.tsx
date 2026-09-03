@@ -1,0 +1,48 @@
+import type { Metadata } from "next";
+import { Inter, Source_Serif_4 } from "next/font/google";
+import { TopNav } from "@/components/TopNav";
+import "./globals.css";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+});
+
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  variable: "--font-source-serif",
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: {
+    default: "Enterprise AI Portal",
+    template: "%s · Enterprise AI Portal",
+  },
+  description:
+    "AI workspace for casino and resort operations, running on shared Nutanix infrastructure.",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{ children: React.ReactNode }>) {
+  return (
+    <html lang="en" className={`${inter.variable} ${sourceSerif.variable}`}>
+      <body className="min-h-screen bg-ink-950">
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-sm focus:bg-gold-500 focus:px-4 focus:py-2 focus:text-ink-950"
+        >
+          Skip to content
+        </a>
+
+        <TopNav />
+
+        {/* Pages own their own layout: the dashboard runs three columns at full
+            width, the others centre a reading column. */}
+        <div id="main">{children}</div>
+      </body>
+    </html>
+  );
+}

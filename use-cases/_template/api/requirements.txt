@@ -1,0 +1,13 @@
+# Pinned per use case. Nothing here is shared with another use case, so upgrade
+# freely without coordinating. Run `pip freeze > requirements.lock.txt` before
+# deploying if you need reproducible builds.
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.8
+httpx>=0.27
+
+# Uncomment what this use case actually needs:
+# openai>=1.50          # Nutanix Enterprise AI (OpenAI-compatible)
+# pymilvus>=2.4         # vector database (VECTOR_DB_KIND=milvus)
+# psycopg[binary]>=3.2  # vector database (VECTOR_DB_KIND=pgvector)
+# kubernetes>=30.1      # Nutanix Kubernetes Platform

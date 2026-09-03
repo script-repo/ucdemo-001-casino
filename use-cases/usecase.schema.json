@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ai-portal.local/schemas/usecase.json",
+  "title": "Use-case manifest",
+  "description": "Contract for use-cases/<slug>/usecase.json. Enforced by `npm run validate`.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["slug", "title", "summary", "status", "owner", "tags", "resources"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "slug": {
+      "type": "string",
+      "description": "Must match the folder name. Lowercase, hyphen separated.",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "title": { "type": "string", "minLength": 1 },
+    "summary": { "type": "string", "minLength": 1, "maxLength": 280 },
+    "status": {
+      "type": "string",
+      "enum": ["active", "beta", "planned", "retired"]
+    },
+    "owner": { "type": "string", "minLength": 1 },
+    "tags": { "type": "array", "items": { "type": "string" } },
+    "category": {
+      "type": "string",
+      "description": "Groups the use case in the dashboard category rail, e.g. \"Gaming & Ops\".",
+      "minLength": 1
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon name from components/icons.tsx.",
+      "enum": [
+        "grid",
+        "dice",
+        "megaphone",
+        "coins",
+        "shield",
+        "users",
+        "tag",
+        "chart",
+        "mail",
+        "trendingUp",
+        "workflow",
+        "star",
+        "book"
+      ]
+    },
+    "accent": {
+      "type": "string",
+      "description": "Tile colour for the application card.",
+      "enum": ["navy", "burgundy", "emerald", "bronze", "teal", "plum"]
+    },
+    "resources": {
+      "type": "array",
+      "description": "Ids from shared-resources/resources.json.",
+      "items": {
+        "type": "string",
+        "enum": [
+          "prism-central",
+          "nkp",
+          "nutanix-enterprise-ai",
+          "openrouter",
+          "casino-data-platform",
+          "model-registry",
+          "vector-db"
+        ]
+      },
+      "uniqueItems": true
+    },
+    "api": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "baseUrlEnv": {
+          "type": "string",
+          "pattern": "^[A-Z0-9_]+$"
+        }
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["label", "href"],
+        "properties": {
+          "label": { "type": "string" },
+          "href": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,28 @@
+# Throwaway pod used to stage the portal bundle onto the ai-portal-app volume.
+# Deliberately not part of kustomization.yaml: it is applied by hand, used once,
+# and deleted. The volume is ReadWriteMany, so staging a new bundle does not
+# require stopping the running portal.
+#
+# See deploy/README.md, "Deploying the portal".
+apiVersion: v1
+kind: Pod
+metadata:
+  name: portal-seed
+  namespace: casino-ai-portal
+  labels:
+    app.kubernetes.io/name: portal-seed
+    app.kubernetes.io/part-of: ai-use-case-portal
+spec:
+  restartPolicy: Never
+  containers:
+    - name: seed
+      # busybox provides the tar that `kubectl cp` needs on the receiving end.
+      image: busybox:1.36
+      command: ["sh", "-c", "sleep 36000"]
+      volumeMounts:
+        - name: app
+          mountPath: /bundle
+  volumes:
+    - name: app
+      persistentVolumeClaim:
+        claimName: ai-portal-app

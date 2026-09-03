@@ -1,0 +1,96 @@
+# Backend workload for __TITLE__. Delete this folder if the use case is UI only.
+#
+# Shared-resource configuration is injected from the ConfigMap and Secret in
+# deploy/k8s/. Use-case specific values belong in the ConfigMap below.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: __SLUG__
+  labels:
+    app.kubernetes.io/name: __SLUG__
+    app.kubernetes.io/part-of: ai-use-case-portal
+    ai-portal.nutanix.com/use-case: __SLUG__
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: __SLUG__-config
+  labels:
+    ai-portal.nutanix.com/use-case: __SLUG__
+data:
+  __ENV_PREFIX___COLLECTION: __SLUG____default
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: __SLUG__
+  labels:
+    app.kubernetes.io/name: __SLUG__
+    app.kubernetes.io/part-of: ai-use-case-portal
+    ai-portal.nutanix.com/use-case: __SLUG__
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: __SLUG__
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: __SLUG__
+        app.kubernetes.io/part-of: ai-use-case-portal
+        ai-portal.nutanix.com/use-case: __SLUG__
+    spec:
+      serviceAccountName: __SLUG__
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      containers:
+        - name: api
+          image: registry.example.com/ai-portal/__SLUG__:latest
+          ports:
+            - name: http
+              containerPort: 8100
+          envFrom:
+            - configMapRef:
+                name: shared-resources-config
+            - secretRef:
+                name: shared-resources
+            - configMapRef:
+                name: __SLUG__-config
+          # Requests are mandatory on the shared cluster; see shared-resources/nkp/README.md
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 15
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: __SLUG__
+  labels:
+    ai-portal.nutanix.com/use-case: __SLUG__
+spec:
+  selector:
+    app.kubernetes.io/name: __SLUG__
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

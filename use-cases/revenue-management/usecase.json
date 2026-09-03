@@ -1,0 +1,22 @@
+{
+  "$schema": "../usecase.schema.json",
+  "slug": "revenue-management",
+  "title": "Revenue Management",
+  "summary": "Recommend room rates from a demand forecast that reserves inventory for expected casino demand, so cash bookings do not displace players worth more than the rate.",
+  "status": "planned",
+  "owner": "unassigned",
+  "tags": ["Revenue", "Forecasting", "Pricing"],
+  "category": "Finance",
+  "icon": "trendingUp",
+  "accent": "bronze",
+  "resources": ["nkp", "casino-data-platform", "model-registry"],
+  "api": {
+    "enabled": false,
+    "baseUrlEnv": "REVENUE_MANAGEMENT_API_URL"
+  },
+  "links": [
+    { "label": "Design", "href": "/use-cases/revenue-management/DESIGN.md" },
+    { "label": "Portfolio design", "href": "/docs/casino-uc-design.md" },
+    { "label": "Scope", "href": "/docs/casino-scope.md" }
+  ]
+}

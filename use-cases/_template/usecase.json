@@ -1,0 +1,18 @@
+{
+  "$schema": "../usecase.schema.json",
+  "slug": "__SLUG__",
+  "title": "__TITLE__",
+  "summary": "One or two sentences describing what this use case does and who it is for.",
+  "status": "planned",
+  "owner": "unassigned",
+  "tags": [],
+  "category": "Uncategorised",
+  "icon": "grid",
+  "accent": "navy",
+  "resources": [],
+  "api": {
+    "enabled": false,
+    "baseUrlEnv": "__ENV_PREFIX___API_URL"
+  },
+  "links": []
+}

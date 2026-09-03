@@ -1,0 +1,142 @@
+# Portal: dashboard plus every use-case UI.
+#
+# This cluster has no container registry available and the workstation has no
+# container runtime, so the portal runs the Next.js standalone bundle from a
+# shared volume on a stock node image rather than from a purpose-built image.
+# The Dockerfile at the repo root remains the intended path once a registry
+# exists: build it, push it, then replace the image/command/volume below with
+# `image: <registry>/ai-portal:<tag>`. See deploy/README.md for the procedure
+# that stages the bundle onto the volume.
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ai-portal-app
+  # Namespace is explicit on every object here. Without it, `kubectl apply -f`
+  # targets whatever namespace the current context defaults to, which is not
+  # necessarily this one.
+  namespace: casino-ai-portal
+  labels:
+    app.kubernetes.io/name: ai-portal
+    app.kubernetes.io/part-of: ai-use-case-portal
+spec:
+  # ReadWriteMany so replicas on different nodes share one copy of the bundle
+  # and it can be restaged without stopping the Deployment.
+  accessModes: ["ReadWriteMany"]
+  storageClassName: nai-nfs-storage
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ai-portal
+  namespace: casino-ai-portal
+  labels:
+    app.kubernetes.io/name: ai-portal
+    app.kubernetes.io/part-of: ai-use-case-portal
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-portal
+  namespace: casino-ai-portal
+  labels:
+    app.kubernetes.io/name: ai-portal
+    app.kubernetes.io/part-of: ai-use-case-portal
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ai-portal
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ai-portal
+        app.kubernetes.io/part-of: ai-use-case-portal
+    spec:
+      serviceAccountName: ai-portal
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: portal
+          image: node:24-alpine
+          workingDir: /app
+          command: ["node", "server.js"]
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: PORT
+              value: "3000"
+            - name: HOSTNAME
+              value: 0.0.0.0
+          envFrom:
+            - configMapRef:
+                name: shared-resources-config
+            - secretRef:
+                name: shared-resources
+          resources:
+            requests:
+              cpu: 200m
+              memory: 512Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: app
+              mountPath: /app
+              readOnly: true
+            - name: cache
+              mountPath: /app/.next/cache
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: app
+          persistentVolumeClaim:
+            claimName: ai-portal-app
+            readOnly: true
+        - name: cache
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-portal
+  namespace: casino-ai-portal
+  labels:
+    app.kubernetes.io/name: ai-portal
+    app.kubernetes.io/part-of: ai-use-case-portal
+spec:
+  type: NodePort
+  selector:
+    app.kubernetes.io/name: ai-portal
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      nodePort: 30007

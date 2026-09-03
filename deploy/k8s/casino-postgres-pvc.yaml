@@ -1,0 +1,22 @@
+# Persistent storage for the casino data platform: the simulated CMS source
+# (cms_raw), the analytics warehouse, and pgvector collections.
+#
+# nutanix-volume is the cluster default and uses WaitForFirstConsumer, so this
+# claim stays Pending until the Postgres pod schedules. That is expected, not a
+# failure.
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: casino-postgres-data
+  namespace: casino-ai-portal
+  labels:
+    app.kubernetes.io/name: casino-postgres
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: casino-ai-use-case-portal
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: nutanix-volume
+  resources:
+    requests:
+      storage: 50Gi

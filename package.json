@@ -1,0 +1,27 @@
+{
+  "name": "ai-use-case-portal",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Dashboard and self-contained use-case apps built on shared Nutanix AI infrastructure.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "validate": "node scripts/validate-use-cases.mjs",
+    "new:use-case": "node scripts/new-use-case.mjs"
+  },
+  "dependencies": {
+    "next": "16.3.0",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.3.3",
+    "@types/node": "26.1.2",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.4",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3"
+  }
+}

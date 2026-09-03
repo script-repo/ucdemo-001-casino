@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: infrastructure-copilot
+  labels:
+    app.kubernetes.io/name: infrastructure-copilot
+    app.kubernetes.io/part-of: ai-use-case-portal
+    ai-portal.nutanix.com/use-case: infrastructure-copilot
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: infrastructure-copilot
+  labels:
+    app.kubernetes.io/name: infrastructure-copilot
+    app.kubernetes.io/part-of: ai-use-case-portal
+    ai-portal.nutanix.com/use-case: infrastructure-copilot
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: infrastructure-copilot
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: infrastructure-copilot
+        app.kubernetes.io/part-of: ai-use-case-portal
+        ai-portal.nutanix.com/use-case: infrastructure-copilot
+    spec:
+      serviceAccountName: infrastructure-copilot
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+      containers:
+        - name: api
+          image: registry.example.com/ai-portal/infrastructure-copilot:latest
+          ports:
+            - name: http
+              containerPort: 8100
+          envFrom:
+            - configMapRef:
+                name: shared-resources-config
+            - secretRef:
+                name: shared-resources
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 15
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: infrastructure-copilot
+  labels:
+    ai-portal.nutanix.com/use-case: infrastructure-copilot
+spec:
+  selector:
+    app.kubernetes.io/name: infrastructure-copilot
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

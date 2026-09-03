@@ -1,0 +1,22 @@
+{
+  "$schema": "../usecase.schema.json",
+  "slug": "churn-risk-modeling",
+  "title": "Churn-Risk Modeling",
+  "summary": "Flag disengaging players before they stop visiting, using each player's own visit cadence rather than a fixed calendar window.",
+  "status": "planned",
+  "owner": "unassigned",
+  "tags": ["Retention", "Scoring", "Early Warning"],
+  "category": "Risk & Compliance",
+  "icon": "shield",
+  "accent": "teal",
+  "resources": ["nkp", "casino-data-platform", "model-registry"],
+  "api": {
+    "enabled": false,
+    "baseUrlEnv": "CHURN_RISK_MODELING_API_URL"
+  },
+  "links": [
+    { "label": "Design", "href": "/use-cases/churn-risk-modeling/DESIGN.md" },
+    { "label": "Portfolio design", "href": "/docs/casino-uc-design.md" },
+    { "label": "Scope", "href": "/docs/casino-scope.md" }
+  ]
+}

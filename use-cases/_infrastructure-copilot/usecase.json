@@ -1,0 +1,17 @@
+{
+  "$schema": "../usecase.schema.json",
+  "slug": "infrastructure-copilot",
+  "title": "Infrastructure Copilot",
+  "summary": "Ask plain-language questions about the Nutanix estate. Reads live inventory from Prism Central and answers through Nutanix Enterprise AI.",
+  "status": "active",
+  "owner": "Platform Engineering",
+  "tags": ["operations", "chat", "inventory"],
+  "resources": ["prism-central", "nutanix-enterprise-ai"],
+  "api": {
+    "enabled": true,
+    "baseUrlEnv": "INFRASTRUCTURE_COPILOT_API_URL"
+  },
+  "links": [
+    { "label": "Runbook", "href": "https://wiki.example.com/ai-portal/copilot" }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "../usecase.schema.json",
+  "slug": "document-intelligence",
+  "title": "Document Intelligence",
+  "summary": "Retrieval over internal policy and contract libraries. Answers cite the source passages they were drawn from.",
+  "status": "beta",
+  "owner": "Knowledge Management",
+  "tags": ["rag", "search", "documents"],
+  "resources": ["nutanix-enterprise-ai", "vector-db"],
+  "api": {
+    "enabled": false
+  },
+  "links": []
+}

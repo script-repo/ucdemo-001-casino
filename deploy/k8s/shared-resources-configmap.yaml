@@ -1,0 +1,69 @@
+# Non-secret shared-resource configuration, consumed by the portal and by every
+# use-case backend via `envFrom`. Keep in sync with shared-resources/resources.json.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: shared-resources-config
+  namespace: casino-ai-portal
+  labels:
+    app.kubernetes.io/part-of: casino-ai-use-case-portal
+data:
+  # OpenRouter model gateway: chat, embeddings, and rerank. This is the gateway
+  # the backends target — verified reachable from a pod in this namespace, and
+  # the only one of the two that serves embeddings. Both chat models return a
+  # separate reasoning field billed against max_tokens, so keep the budget high.
+  # OPENROUTER_API_KEY comes from the Secret, not from here.
+  OPENROUTER_BASE_URL: https://openrouter.ai/api/v1
+  OPENROUTER_CHAT_MODEL: nvidia/nemotron-3-super-120b-a12b:free
+  OPENROUTER_CHAT_MODEL_FAST: nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free
+  OPENROUTER_EMBEDDING_MODEL: nvidia/nemotron-3-embed-1b:free
+  # Fixed at 2048; the model rejects any other value. Exceeds pgvector's
+  # 2000-dimension index limit, so indexes use a halfvec cast.
+  OPENROUTER_EMBEDDING_DIMENSIONS: "2048"
+  OPENROUTER_RERANK_MODEL: nvidia/llama-nemotron-rerank-vl-1b-v2:free
+  OPENROUTER_MAX_TOKENS: "1536"
+
+  # Nutanix Enterprise AI. On-premises, and NOT reachable from this cluster —
+  # retained for workstation use and for when egress is opened.
+  NAI_ENDPOINT: https://nai-dre.corp.p10y.ntnxdpro.com/enterpriseai/gateway/v1
+  NAI_CHAT_MODEL: nemotron3-fp4-uni
+  NAI_MAX_TOKENS: "1536"
+
+  # Nutanix Kubernetes Platform
+  NKP_CLUSTER_NAME: cankp-primary
+  NKP_NAMESPACE: casino-ai-portal
+  NKP_API_SERVER: https://10.42.156.11:6443
+
+  # Casino data platform. Holds cms_raw, the analytics contracts, and one
+  # uc_<slug> schema per use case. CASINO_DB_USER and CASINO_DB_PASSWORD are
+  # per-use-case and come from the Secret, not from here.
+  CASINO_DB_HOST: casino-postgres.casino-ai-portal.svc.cluster.local
+  CASINO_DB_PORT: "5432"
+  CASINO_DB_NAME: casino
+  CASINO_DB_SSLMODE: disable
+
+  # Model registry. The run id it issues is the model_version written to
+  # analytics.player_scores and analytics.decision_log.
+  MLFLOW_TRACKING_URI: http://mlflow.casino-ai-portal.svc.cluster.local:5000
+  MLFLOW_EXPERIMENT_PREFIX: casino
+
+  # Vector database: pgvector in the same Postgres. Provisioned but unused —
+  # the inference endpoint publishes no embedding model.
+  VECTOR_DB_KIND: pgvector
+  VECTOR_DB_ENDPOINT: postgresql://casino-postgres.casino-ai-portal.svc.cluster.local:5432/casino
+  VECTOR_DB_DATABASE: casino
+
+  # Nutanix Prism Central. The lab endpoint serves a self-signed certificate,
+  # so TLS verification is disabled here; do not carry that into production.
+  PRISM_CENTRAL_ENDPOINT: https://10.42.156.7:9440
+  PRISM_CENTRAL_USERNAME: admin
+  PRISM_CENTRAL_INSECURE_TLS: "true"
+
+  # Use-case backend addresses. None of the six casino use cases has a backend
+  # yet; each DESIGN.md specifies the API it will expose. Uncomment as they land.
+  # PREDICTIVE_LTV_SCORING_API_URL: http://predictive-ltv-scoring.casino-ai-portal.svc.cluster.local
+  # CHURN_RISK_MODELING_API_URL: http://churn-risk-modeling.casino-ai-portal.svc.cluster.local
+  # DYNAMIC_OFFER_ENGINE_API_URL: http://dynamic-offer-engine.casino-ai-portal.svc.cluster.local
+  # WIN_BACK_CAMPAIGNS_API_URL: http://win-back-campaigns.casino-ai-portal.svc.cluster.local
+  # SLOT_TABLE_PERFORMANCE_API_URL: http://slot-table-performance.casino-ai-portal.svc.cluster.local
+  # REVENUE_MANAGEMENT_API_URL: http://revenue-management.casino-ai-portal.svc.cluster.local

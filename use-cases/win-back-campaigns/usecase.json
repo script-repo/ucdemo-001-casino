@@ -1,0 +1,22 @@
+{
+  "$schema": "../usecase.schema.json",
+  "slug": "win-back-campaigns",
+  "title": "Win-Back Campaigns",
+  "summary": "Assemble reactivation cohorts from churn-risk and LTV scores, with an offer ladder by value and a per-candidate audit trail. Approval and release are separate human actions.",
+  "status": "planned",
+  "owner": "unassigned",
+  "tags": ["Reactivation", "Campaigns", "Reviewed"],
+  "category": "Marketing",
+  "icon": "mail",
+  "accent": "plum",
+  "resources": ["nkp", "casino-data-platform", "openrouter", "vector-db"],
+  "api": {
+    "enabled": false,
+    "baseUrlEnv": "WIN_BACK_CAMPAIGNS_API_URL"
+  },
+  "links": [
+    { "label": "Design", "href": "/use-cases/win-back-campaigns/DESIGN.md" },
+    { "label": "Portfolio design", "href": "/docs/casino-uc-design.md" },
+    { "label": "Scope", "href": "/docs/casino-scope.md" }
+  ]
+}
