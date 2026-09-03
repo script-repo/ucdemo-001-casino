@@ -3,7 +3,8 @@
 Correlates machine placement and game theme with hold percentage and
 time-on-device.
 
-**Status:** planned. Scaffolded UI only; no backend yet.
+**Status:** beta. Interactive synthetic peer analysis, unit drill-down, theme
+comparison, table performance, and generated operational reports are available.
 
 Full design — outcomes, contracts, infrastructure, UI, flows, and API — is in
 [`DESIGN.md`](./DESIGN.md). This README is the summary.

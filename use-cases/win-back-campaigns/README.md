@@ -3,7 +3,8 @@
 Triggered by churn risk crossing a threshold. Assembles a candidate list, sizes
 each offer by LTV percentile, and routes the list for approval.
 
-**Status:** planned. Scaffolded UI only; no backend yet.
+**Status:** beta. Interactive cohort preview, frozen campaign review, offer
+editing, separate approval/release, and generated campaign reports are available.
 
 Full design — outcomes, contracts, infrastructure, UI, flows, and API — is in
 [`DESIGN.md`](./DESIGN.md). This README is the summary.

@@ -3,13 +3,16 @@
   "slug": "win-back-campaigns",
   "title": "Win-Back Campaigns",
   "summary": "Assemble reactivation cohorts from churn-risk and LTV scores, with an offer ladder by value and a per-candidate audit trail. Approval and release are separate human actions.",
-  "status": "planned",
-  "owner": "unassigned",
+  "status": "beta",
+  "owner": "Marketing Operations",
   "tags": ["Reactivation", "Campaigns", "Reviewed"],
   "category": "Marketing",
   "icon": "mail",
   "accent": "plum",
-  "resources": ["openrouter"],
+  "resources": [
+    "nutanix-enterprise-ai",
+    "openrouter"
+  ],
   "api": {
     "enabled": false,
     "baseUrlEnv": "WIN_BACK_CAMPAIGNS_API_URL"
