@@ -15,6 +15,7 @@ import type {
   CohortQuery,
   ScoreFilters,
 } from "@/use-cases/predictive-ltv-scoring/web/types";
+import { generateEpvBriefing } from "@/lib/model-gateways";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -105,8 +106,43 @@ export async function POST(request: Request) {
         requiresStaleAck: hoursSinceScore() > getStaleHours(),
       });
     }
-  } catch {
-    return noStore({ error: "Invalid Expected Player Value query." }, { status: 400 });
+    if (body.operation === "ai-briefing") {
+      const filters = body.filters as ScoreFilters;
+      const cohort = queryCohort({
+        filters,
+        sort: "ltv12m",
+        sortDir: "desc",
+        page: 1,
+        pageSize: 8,
+      });
+      const summary = getSummary();
+      const context = [
+        `Property: ${cohort.property}`,
+        `Matching cohort: ${cohort.total.toLocaleString()} players`,
+        `Population scored: ${summary.scoredCount.toLocaleString()}`,
+        `Population intentionally unscored: ${summary.unscoredCount.toLocaleString()}`,
+        `Population rising: ${summary.risingCount.toLocaleString()}`,
+        `Portfolio expected 12-month value: $${summary.totalPredictedValue.toLocaleString()}`,
+        `Active filters: ${JSON.stringify(filters)}`,
+        "Highest-value matching synthetic records:",
+        ...cohort.results.map(
+          (player) =>
+            `- ${player.displayLabel}: expected value $${player.ltv12m?.toLocaleString() ?? "unscored"}, percentile ${player.percentile ?? "n/a"}, tier ${player.tier}, trend ${player.trend ?? "n/a"}, visits ${player.visitCount}`,
+        ),
+        "Provide: (1) executive summary, (2) three observations, (3) responsible next actions, and (4) caveats.",
+      ].join("\n");
+      return noStore(await generateEpvBriefing(context));
+    }
+  } catch (error) {
+    return noStore(
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Expected Player Value request could not be completed.",
+      },
+      { status: 502 },
+    );
   }
 
   return noStore({ error: "Unknown operation." }, { status: 400 });

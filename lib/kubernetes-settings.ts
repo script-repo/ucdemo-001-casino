@@ -80,6 +80,33 @@ export async function getStoredSettingNames(): Promise<Set<string>> {
   return new Set(Object.keys(secret.data ?? {}));
 }
 
+/**
+ * Resolves only explicitly requested settings for server-side integrations.
+ * Secret values override deployment environment values and must never be
+ * returned directly to a browser or written to logs.
+ */
+export async function getSettingValues(
+  names: string[],
+): Promise<Record<string, string>> {
+  const values: Record<string, string> = {};
+  for (const name of names) {
+    if (process.env[name]) values[name] = process.env[name]!;
+  }
+
+  const response = await secretRequest("GET");
+  if (!response || response.status === 404) return values;
+  if (!response.ok) {
+    throw new Error(`Kubernetes Secret read failed (${response.status}).`);
+  }
+
+  const secret = (await response.json()) as SecretResponse;
+  for (const name of names) {
+    const encoded = secret.data?.[name];
+    if (encoded) values[name] = Buffer.from(encoded, "base64").toString("utf8");
+  }
+  return values;
+}
+
 export async function patchStoredSettings({
   set,
   clear,

@@ -8,6 +8,9 @@ type ApiResult = {
   ok?: boolean;
   error?: string;
   setVariables?: string[];
+  message?: string;
+  latencyMs?: number;
+  modelCount?: number;
 };
 
 export function ResourceSettingsForm({
@@ -25,6 +28,7 @@ export function ResourceSettingsForm({
   const [values, setValues] = useState<Record<string, string>>({});
   const [stored, setStored] = useState(initialStored);
   const [pending, setPending] = useState(false);
+  const [testing, setTesting] = useState(false);
   const [message, setMessage] = useState<{
     tone: "ok" | "error";
     text: string;
@@ -38,6 +42,12 @@ export function ResourceSettingsForm({
   const changes = Object.fromEntries(
     Object.entries(values).filter(([, value]) => value.trim()),
   );
+  const canTest = variables
+    .filter((variable) => variable.required)
+    .every(
+      (variable) =>
+        storedSet.has(variable.name) || environmentSet.has(variable.name),
+    );
 
   async function request(body: {
     set?: Record<string, string>;
@@ -70,6 +80,34 @@ export function ResourceSettingsForm({
       });
     } finally {
       setPending(false);
+    }
+  }
+
+  async function testConnection() {
+    setTesting(true);
+    setMessage(null);
+    try {
+      const response = await fetch("/api/shared-resource-settings", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resourceId }),
+      });
+      const result = (await response.json()) as ApiResult;
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error ?? "Connection test failed.");
+      }
+      setMessage({
+        tone: "ok",
+        text: `${result.message} ${result.modelCount ?? 0} models · ${result.latencyMs ?? 0} ms`,
+      });
+    } catch (error) {
+      setMessage({
+        tone: "error",
+        text:
+          error instanceof Error ? error.message : "Connection test failed.",
+      });
+    } finally {
+      setTesting(false);
     }
   }
 
@@ -165,6 +203,14 @@ export function ResourceSettingsForm({
           className="rounded-md bg-navy-900 px-4 py-2 text-sm font-semibold text-white hover:bg-navy-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {pending ? "Saving…" : "Save changes"}
+        </button>
+        <button
+          type="button"
+          disabled={pending || testing || !canTest}
+          onClick={testConnection}
+          className="rounded-md border border-navy-700 px-4 py-2 text-sm font-semibold text-navy-900 hover:bg-mist-100 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {testing ? "Testing…" : "Test connection"}
         </button>
         <p
           role="status"

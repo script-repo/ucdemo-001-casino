@@ -25,6 +25,12 @@ export type HealthPayload = {
   summary: PortfolioSummary;
 };
 
+export type AiBriefing = {
+  text: string;
+  provider: string;
+  model: string;
+};
+
 async function responseJson<T>(response: Response): Promise<T> {
   const payload = (await response.json()) as T & { error?: string };
   if (!response.ok) {
@@ -94,6 +100,18 @@ export async function buildExport(filters: ScoreFilters): Promise<{
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ operation: "export", filters }),
+    }),
+  );
+}
+
+export async function generateAiBriefing(
+  filters: ScoreFilters,
+): Promise<AiBriefing> {
+  return responseJson(
+    await fetch("/api/expected-player-value", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ operation: "ai-briefing", filters }),
     }),
   );
 }

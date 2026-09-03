@@ -6,6 +6,8 @@ import {
   fetchCohort,
   fetchHealth,
   fetchPlayerDetail,
+  generateAiBriefing,
+  type AiBriefing,
   type HealthPayload,
   type PlayerDetailPayload,
 } from "./client-api";
@@ -56,6 +58,9 @@ export function LtvApp() {
   const [saveName, setSaveName] = useState("");
   const [pending, startTransition] = useTransition();
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [aiBriefing, setAiBriefing] = useState<AiBriefing | null>(null);
+  const [aiPending, setAiPending] = useState(false);
+  const [aiError, setAiError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -210,6 +215,23 @@ export function LtvApp() {
     });
   }
 
+  async function createAiBriefing() {
+    setAiPending(true);
+    setAiError(null);
+    try {
+      setAiBriefing(await generateAiBriefing(filters));
+    } catch (error) {
+      setAiBriefing(null);
+      setAiError(
+        error instanceof Error
+          ? error.message
+          : "The AI briefing could not be generated.",
+      );
+    } finally {
+      setAiPending(false);
+    }
+  }
+
   const summary = health?.summary;
   const property = cohort?.property ?? health?.run.property ?? "this property";
 
@@ -247,7 +269,16 @@ export function LtvApp() {
               {headerBlurb}
             </p>
           </div>
-          {task === "prioritize" && (
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              disabled={aiPending || !health}
+              onClick={createAiBriefing}
+              className="rounded-md border border-navy-700 px-4 py-2.5 text-sm font-semibold text-navy-900 hover:bg-mist-100 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {aiPending ? "Generating…" : "Generate AI briefing"}
+            </button>
+            {task === "prioritize" && (
             <button
               type="button"
               onClick={() => setExportOpen(true)}
@@ -255,7 +286,8 @@ export function LtvApp() {
             >
               Export cohort
             </button>
-          )}
+            )}
+          </div>
         </div>
       </div>
 
@@ -267,6 +299,44 @@ export function LtvApp() {
         )}
 
         {health && <FreshnessBanner health={health} />}
+
+        {(aiBriefing || aiError) && (
+          <section className="rounded-lg border border-gold-600/40 bg-white p-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-charcoal-700">
+                  Generative AI · decision support
+                </p>
+                <h3 className="mt-1 font-serif text-xl text-navy-900">
+                  EPV portfolio briefing
+                </h3>
+              </div>
+              {aiBriefing && (
+                <span className="rounded-full bg-mist-100 px-2.5 py-1 text-[10px] font-semibold text-charcoal-700">
+                  {aiBriefing.provider} · {aiBriefing.model}
+                </span>
+              )}
+            </div>
+            {aiBriefing ? (
+              <>
+                <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-charcoal-900">
+                  {aiBriefing.text}
+                </p>
+                <p className="mt-4 border-t border-stone-200 pt-3 text-xs text-charcoal-700">
+                  Generated from aggregated synthetic data. Review before use;
+                  predicted value is not an approved reinvestment amount.
+                </p>
+              </>
+            ) : (
+              <p className="mt-4 text-sm text-burgundy-700">
+                {aiError}{" "}
+                <a href="/resources" className="font-semibold underline">
+                  Open Shared Resources
+                </a>
+              </p>
+            )}
+          </section>
+        )}
 
         <TaskPicker
           active={task}

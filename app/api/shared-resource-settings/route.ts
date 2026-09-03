@@ -3,6 +3,7 @@ import {
   getStoredSettingNames,
   patchStoredSettings,
 } from "@/lib/kubernetes-settings";
+import { testModelGateway } from "@/lib/model-gateways";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -43,6 +44,45 @@ export async function GET() {
     return Response.json(
       { error: "Settings storage is unavailable." },
       { status: 503 },
+    );
+  }
+}
+
+export async function POST(request: Request) {
+  if (!sameOrigin(request)) {
+    return Response.json({ error: "Cross-origin request rejected." }, { status: 403 });
+  }
+
+  let resourceId: unknown;
+  try {
+    const rawBody = await request.text();
+    if (Buffer.byteLength(rawBody, "utf8") > 4 * 1024) {
+      return Response.json({ error: "Request is too large." }, { status: 413 });
+    }
+    resourceId = (JSON.parse(rawBody) as { resourceId?: unknown }).resourceId;
+  } catch {
+    return Response.json({ error: "Invalid JSON." }, { status: 400 });
+  }
+
+  if (
+    resourceId !== "openrouter" &&
+    resourceId !== "nutanix-enterprise-ai"
+  ) {
+    return Response.json(
+      { error: "This shared resource cannot be tested." },
+      { status: 400 },
+    );
+  }
+
+  try {
+    return Response.json({ ok: true, ...(await testModelGateway(resourceId)) });
+  } catch (error) {
+    return Response.json(
+      {
+        error:
+          error instanceof Error ? error.message : "Connection test failed.",
+      },
+      { status: 502 },
     );
   }
 }
