@@ -218,10 +218,10 @@ export function DashboardShell({
               <Icon name="arrowRight" className="size-4" />
             </a>
             <Link
-              href="/resources"
+              href="/cms"
               className="inline-flex items-center gap-2 rounded-md border border-ivory-100/25 bg-white/5 px-5 py-2.5 text-sm font-semibold text-ivory-100 transition-colors hover:bg-white/10"
             >
-              View shared resources
+              Open player CMS
             </Link>
           </div>
         </section>
@@ -414,6 +414,13 @@ export function DashboardShell({
               <Icon name="grid" className="size-4" />
               Browse applications
             </a>
+            <Link
+              href="/cms"
+              className="flex flex-col items-center gap-2 rounded-md border border-stone-200 px-3 py-4 text-center text-[11px] text-charcoal-700 transition-colors hover:border-navy-700 hover:text-navy-950"
+            >
+              <Icon name="users" className="size-4" />
+              Player CMS
+            </Link>
             <Link
               href="/resources"
               className="flex flex-col items-center gap-2 rounded-md border border-stone-200 px-3 py-4 text-center text-[11px] text-charcoal-700 transition-colors hover:border-navy-700 hover:text-navy-950"

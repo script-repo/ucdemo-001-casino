@@ -71,7 +71,7 @@ export async function GET(request: Request) {
     return noStore({
       player,
       narrative: buildNarrative(player),
-      cmsUrl: `https://cms.example.com/players/${player.playerId}`,
+      cmsUrl: `/cms/players/${player.playerId}`,
     });
   }
 

@@ -479,6 +479,12 @@ function ProposalPanel({
       <p className="border-t border-stone-200 pt-3 text-xs text-charcoal-700">
         Decisions are audit events. This interface proposes only and never sends an offer.
       </p>
+      <a
+        href={`/cms/players/${proposal.playerId}`}
+        className="inline-flex items-center justify-center rounded-md bg-navy-900 px-4 py-2.5 text-sm font-semibold text-ivory-100 hover:bg-navy-700"
+      >
+        Open player record in CMS
+      </a>
     </article>
   );
 }

@@ -451,10 +451,12 @@ export function LtvApp() {
                   </span>
                 </label>
                 <p className="mt-2 text-xs text-charcoal-700">
-                  Names and contact details stay in the customer-management system.
-                  Deep-link from CMS with{" "}
-                  <code className="font-mono text-[11px]">?playerId=</code> when
-                  integrated.
+                  Names and contact details live in the{" "}
+                  <a href="/cms" className="font-semibold text-navy-900 underline">
+                    player CMS
+                  </a>
+                  . CMS records deep-link here with{" "}
+                  <code className="font-mono text-[11px]">?playerId=</code>.
                 </p>
                 {hostError && (
                   <p className="mt-3 text-sm text-critical" role="alert">

@@ -13,6 +13,11 @@ const NAV = [
     match: (path: string) => path.startsWith("/use-cases"),
   },
   {
+    label: "Players",
+    href: "/cms",
+    match: (path: string) => path.startsWith("/cms"),
+  },
+  {
     label: "Resources",
     href: "/resources",
     match: (path: string) => path.startsWith("/resources"),

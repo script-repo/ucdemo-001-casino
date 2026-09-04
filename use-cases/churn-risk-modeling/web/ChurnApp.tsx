@@ -475,6 +475,13 @@ function PlayerPanel({
           ))}
         </div>
       </article>
+
+      <a
+        href={`/cms/players/${player.playerId}`}
+        className="inline-flex items-center justify-center rounded-md bg-navy-900 px-4 py-2.5 text-sm font-semibold text-ivory-100 hover:bg-navy-700"
+      >
+        Open player record in CMS
+      </a>
     </div>
   );
 }

@@ -39,7 +39,7 @@ flowchart TB
   end
 
   subgraph portal["Casino AI Portal · Next.js"]
-    UI["Dashboard · Resources · Use-case host"]
+    UI["Dashboard · Player CMS · Resources · Use-case host"]
     BFF["Portal BFF API routes"]
     GW["Inference adapter<br/>NAI first, OpenRouter fallback"]
     UI --> BFF
@@ -106,6 +106,21 @@ inference-backed report or recommended-action control.
 
 Design notes for each application: `use-cases/<slug>/DESIGN.md`.
 Portfolio design: [`docs/casino-uc-design.md`](docs/casino-uc-design.md).
+
+## Player CMS
+
+Patron identity is a portal surface, not a seventh AI use case. `/cms` is a
+synthetic SYNKROS-shaped player book: names, contact, host, card, visits, comps,
+and responsible-gaming flags. Use-case queues keep display labels only and link
+into `/cms/players/<id>`. Host notes stay in browser local storage because the
+lab runs two portal replicas.
+
+Look up IDs from Expected Player Value (`100100+`), churn (`200100+`), offers
+(`300200+`), and win-back (`410000+`). Self-excluded and marketing-suppressed
+records are visible in CMS and must not be used for outreach.
+
+Optional host briefings use the same Nutanix Enterprise AI then OpenRouter path
+as the applications.
 
 ## Shared resources
 

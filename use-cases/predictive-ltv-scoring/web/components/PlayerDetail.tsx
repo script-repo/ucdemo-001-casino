@@ -219,8 +219,6 @@ export function PlayerDetail({
       <footer className="border-t border-stone-200 px-5 py-4">
         <a
           href={cmsUrl}
-          target="_blank"
-          rel="noreferrer"
           className="inline-flex items-center justify-center rounded-md bg-navy-900 px-4 py-2.5 text-sm font-semibold text-ivory-100 hover:bg-navy-700"
         >
           Open player record in CMS
