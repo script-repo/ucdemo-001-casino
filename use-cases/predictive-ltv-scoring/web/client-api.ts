@@ -33,6 +33,17 @@ export type AiBriefing = {
 
 export type PlayerAction = AiBriefing;
 
+function browserGatewayConfig(): Record<string, string> {
+  try {
+    const value = JSON.parse(
+      localStorage.getItem("casino-ai-gateway-settings-v1") ?? "{}",
+    );
+    return value && typeof value === "object" ? value : {};
+  } catch {
+    return {};
+  }
+}
+
 async function responseJson<T>(response: Response): Promise<T> {
   const payload = (await response.json()) as T & { error?: string };
   if (!response.ok) {
@@ -113,7 +124,11 @@ export async function generateAiBriefing(
     await fetch("/api/expected-player-value", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ operation: "ai-briefing", filters }),
+      body: JSON.stringify({
+        operation: "ai-briefing",
+        filters,
+        gatewayConfig: browserGatewayConfig(),
+      }),
     }),
   );
 }
@@ -125,7 +140,11 @@ export async function generatePlayerAction(
     await fetch("/api/expected-player-value", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ operation: "player-action", playerId }),
+      body: JSON.stringify({
+        operation: "player-action",
+        playerId,
+        gatewayConfig: browserGatewayConfig(),
+      }),
     }),
   );
 }

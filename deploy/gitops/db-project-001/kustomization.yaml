@@ -12,7 +12,6 @@ labels:
 resources:
   - namespace.yaml
   - configmap.yaml
-  - settings-rbac.yaml
   - deployment.yaml
   - service.yaml
 

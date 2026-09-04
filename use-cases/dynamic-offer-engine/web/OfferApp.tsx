@@ -18,6 +18,15 @@ type Decision = {
 
 const DEMO_NOW = new Date("2026-09-03T20:05:00Z").getTime();
 
+function browserGatewayConfig(): Record<string, string> {
+  try {
+    const value = JSON.parse(localStorage.getItem("casino-ai-gateway-settings-v1") ?? "{}");
+    return value && typeof value === "object" ? value : {};
+  } catch {
+    return {};
+  }
+}
+
 function money(value: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -312,7 +321,11 @@ function ProposalPanel({
       const response = await fetch("/api/dynamic-offer-engine", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ proposalId: proposal.proposalId, proposal }),
+        body: JSON.stringify({
+          proposalId: proposal.proposalId,
+          proposal,
+          gatewayConfig: browserGatewayConfig(),
+        }),
       });
       const result = (await response.json()) as {
         text?: string;

@@ -1,4 +1,7 @@
-import { generateModelText } from "@/lib/model-gateways";
+import {
+  generateModelText,
+  type BrowserGatewayConfig,
+} from "@/lib/model-gateways";
 import {
   ACCURACY,
   FORECAST_DATE,
@@ -22,6 +25,7 @@ export async function POST(request: Request) {
     operation?: unknown;
     horizon?: unknown;
     selectedDate?: unknown;
+    gatewayConfig?: BrowserGatewayConfig;
   };
   try {
     body = (await request.json()) as typeof body;
@@ -93,6 +97,7 @@ export async function POST(request: Request) {
         systemPrompt:
           "You are assisting a casino-hotel revenue manager. Turn the supplied aggregate, synthetic forecast into a concise decision report. Use exactly these headings: EXECUTIVE SUMMARY, PRIORITY DATES, RECOMMENDED ACTIONS, RISKS AND WATCH-OUTS. Under each heading use no more than three short bullets in plain language. Explain existing model recommendations only: do not invent events, set rates, approve overrides, expose individual players, or encourage gambling.",
         context,
+        gatewayConfig: body.gatewayConfig ?? {},
       }),
       { headers: { "Cache-Control": "no-store" } },
     );

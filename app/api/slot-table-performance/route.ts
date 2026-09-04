@@ -1,4 +1,7 @@
-import { generateModelText } from "@/lib/model-gateways";
+import {
+  generateModelText,
+  type BrowserGatewayConfig,
+} from "@/lib/model-gateways";
 import {
   REFRESHED_AT,
   SLOT_UNITS,
@@ -10,7 +13,13 @@ export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  let body: { operation?: unknown; view?: unknown; zone?: unknown; period?: unknown };
+  let body: {
+    operation?: unknown;
+    view?: unknown;
+    zone?: unknown;
+    period?: unknown;
+    gatewayConfig?: BrowserGatewayConfig;
+  };
   try {
     body = (await request.json()) as typeof body;
   } catch {
@@ -64,6 +73,7 @@ export async function POST(request: Request) {
         systemPrompt:
           "You assist casino gaming operations with synthetic, aggregate slot and table analytics. Explain comparisons only among like-for-like peer groups. Use exactly these headings: BOTTOM LINE, UNDERPERFORMERS, OPPORTUNITIES, NEXT ACTIONS. Under each heading use no more than three short bullets. Do not invent causes, treat low-confidence groups as findings, recommend gambling behavior, or authorize floor changes or purchases.",
         context,
+        gatewayConfig: body.gatewayConfig ?? {},
       }),
       { headers: { "Cache-Control": "no-store" } },
     );

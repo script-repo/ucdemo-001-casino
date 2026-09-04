@@ -12,13 +12,9 @@ export function ResourceCard({
 }) {
   const {
     resource,
-    configured,
-    missing,
     environmentVariables,
     storedVariables,
   } = status;
-  const environmentSet = new Set(environmentVariables);
-  const storedSet = new Set(storedVariables);
 
   return (
     <div className="rounded-lg border border-stone-200 bg-white p-6">
@@ -32,30 +28,15 @@ export function ResourceCard({
           </h3>
         </div>
         <span
-          className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
-            configured
-              ? "bg-success/15 text-success-dark"
-              : "bg-critical/15 text-burgundy-700"
-          }`}
+          className="inline-flex items-center gap-1.5 rounded-full bg-mist-100 px-2.5 py-1 text-xs font-semibold text-charcoal-700"
         >
-          <span
-            className={`size-1.5 rounded-full ${configured ? "bg-success" : "bg-critical"}`}
-            aria-hidden
-          />
-          {configured ? "Configured" : "Not configured"}
+          Browser-local
         </span>
       </div>
 
       <p className="mt-3 max-w-2xl text-sm leading-relaxed text-charcoal-700">
         {resource.summary}
       </p>
-
-      {!configured && (
-        <p className="mt-4 rounded-sm border-l-2 border-critical bg-critical/10 px-4 py-3 text-sm text-charcoal-900">
-          Missing configuration:{" "}
-          <span className="font-mono text-xs">{missing.join(", ")}</span>
-        </p>
-      )}
 
       {showEnv && (
         <table className="mt-5 w-full text-left text-sm">
@@ -98,11 +79,7 @@ export function ResourceCard({
                   {variable.required ? "Yes" : "No"}
                 </td>
                 <td className="py-3 text-charcoal-700">
-                  {storedSet.has(variable.name)
-                    ? "Namespace Secret"
-                    : environmentSet.has(variable.name)
-                      ? "Deployment"
-                      : "Not set"}
+                  Browser local storage
                 </td>
               </tr>
             ))}

@@ -1,10 +1,5 @@
 import "server-only";
 
-import {
-  getSettingValues,
-  patchStoredSettings,
-} from "@/lib/kubernetes-settings";
-
 const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 const DEFAULT_OPENROUTER_MODEL =
   "nvidia/nemotron-3-super-120b-a12b:free";
@@ -25,6 +20,31 @@ type ChatGateway = {
   apiKey: string;
   model: string;
 };
+
+export type BrowserGatewayConfig = {
+  NAI_ENDPOINT?: string;
+  NAI_API_KEY?: string;
+  NAI_MODEL?: string;
+  OPENROUTER_API_KEY?: string;
+  OPENROUTER_MODEL?: string;
+};
+
+function cleanConfig(config: BrowserGatewayConfig | undefined): BrowserGatewayConfig {
+  if (!config || typeof config !== "object") return {};
+  const value = (name: keyof BrowserGatewayConfig, max = 8_192) => {
+    const candidate = config[name];
+    return typeof candidate === "string" && candidate.length <= max
+      ? candidate.trim()
+      : "";
+  };
+  return {
+    NAI_ENDPOINT: value("NAI_ENDPOINT", 2_048),
+    NAI_API_KEY: value("NAI_API_KEY"),
+    NAI_MODEL: value("NAI_MODEL", 300),
+    OPENROUTER_API_KEY: value("OPENROUTER_API_KEY"),
+    OPENROUTER_MODEL: value("OPENROUTER_MODEL", 300),
+  };
+}
 
 function endpoint(base: string, path: string) {
   return `${base.replace(/\/+$/, "")}/${path.replace(/^\/+/, "")}`;
@@ -58,18 +78,18 @@ async function listModels(baseUrl: string, apiKey: string) {
   };
 }
 
-export async function testModelGateway(resourceId: string): Promise<{
+export async function testModelGateway(
+  resourceId: string,
+  browserConfig: BrowserGatewayConfig,
+): Promise<{
   message: string;
   latencyMs: number;
   modelCount: number;
   models: string[];
   selectedModel: string | null;
 }> {
+  const settings = cleanConfig(browserConfig);
   if (resourceId === "openrouter") {
-    const settings = await getSettingValues([
-      "OPENROUTER_API_KEY",
-      "OPENROUTER_MODEL",
-    ]);
     if (!settings.OPENROUTER_API_KEY) {
       throw new Error("Save an OpenRouter API key before testing.");
     }
@@ -89,18 +109,15 @@ export async function testModelGateway(resourceId: string): Promise<{
       latencyMs: Date.now() - started,
       modelCount: result.models.length,
       models: result.models.sort(),
-      selectedModel: result.models.includes(settings.OPENROUTER_MODEL)
-        ? settings.OPENROUTER_MODEL
-        : null,
+      selectedModel:
+        settings.OPENROUTER_MODEL &&
+        result.models.includes(settings.OPENROUTER_MODEL)
+          ? settings.OPENROUTER_MODEL
+          : null,
     };
   }
 
   if (resourceId === "nutanix-enterprise-ai") {
-    const settings = await getSettingValues([
-      "NAI_ENDPOINT",
-      "NAI_API_KEY",
-      "NAI_MODEL",
-    ]);
     if (!settings.NAI_ENDPOINT || !settings.NAI_API_KEY) {
       throw new Error(
         "Save the Nutanix Enterprise AI endpoint and API key before testing.",
@@ -112,9 +129,10 @@ export async function testModelGateway(resourceId: string): Promise<{
       latencyMs: result.latencyMs,
       modelCount: result.models.length,
       models: result.models.sort(),
-      selectedModel: result.models.includes(settings.NAI_MODEL)
-        ? settings.NAI_MODEL
-        : null,
+      selectedModel:
+        settings.NAI_MODEL && result.models.includes(settings.NAI_MODEL)
+          ? settings.NAI_MODEL
+          : null,
     };
   }
 
@@ -124,26 +142,17 @@ export async function testModelGateway(resourceId: string): Promise<{
 export async function selectModelGateway(
   resourceId: string,
   model: string,
+  browserConfig: BrowserGatewayConfig,
 ): Promise<{ selectedModel: string }> {
-  const result = await testModelGateway(resourceId);
+  const result = await testModelGateway(resourceId, browserConfig);
   if (!result.models.includes(model)) {
     throw new Error("Select a model returned by the authenticated gateway.");
   }
-  const variable =
-    resourceId === "nutanix-enterprise-ai" ? "NAI_MODEL" : "OPENROUTER_MODEL";
-  await patchStoredSettings({ set: { [variable]: model }, clear: [] });
   return { selectedModel: model };
 }
 
-async function resolveChatGateways(): Promise<ChatGateway[]> {
-  const settings = await getSettingValues([
-    "OPENROUTER_API_KEY",
-    "OPENROUTER_MODEL",
-    "OPENROUTER_CHAT_MODEL",
-    "NAI_ENDPOINT",
-    "NAI_API_KEY",
-    "NAI_MODEL",
-  ]);
+async function resolveChatGateways(browserConfig: BrowserGatewayConfig): Promise<ChatGateway[]> {
+  const settings = cleanConfig(browserConfig);
   const gateways: ChatGateway[] = [];
   const setupErrors: string[] = [];
 
@@ -154,9 +163,10 @@ async function resolveChatGateways(): Promise<ChatGateway[]> {
         settings.NAI_ENDPOINT,
         settings.NAI_API_KEY,
       );
-      const model = available.models.includes(settings.NAI_MODEL)
-        ? settings.NAI_MODEL
-        : available.models[0];
+      const model =
+        settings.NAI_MODEL && available.models.includes(settings.NAI_MODEL)
+          ? settings.NAI_MODEL
+          : available.models[0];
       if (!model) {
         throw new Error("No available models were returned.");
       }
@@ -180,7 +190,6 @@ async function resolveChatGateways(): Promise<ChatGateway[]> {
       apiKey: normalizeOpenRouterKey(settings.OPENROUTER_API_KEY),
       model:
         settings.OPENROUTER_MODEL ||
-        settings.OPENROUTER_CHAT_MODEL ||
         DEFAULT_OPENROUTER_MODEL,
     });
   }
@@ -191,7 +200,7 @@ async function resolveChatGateways(): Promise<ChatGateway[]> {
   }
 
   throw new Error(
-    "Configure OpenRouter or Nutanix Enterprise AI in Shared Resources first.",
+    "Configure OpenRouter or Nutanix Enterprise AI in this browser first.",
   );
 }
 
@@ -242,15 +251,17 @@ async function requestChat(
 export async function generateModelText({
   systemPrompt,
   context,
+  gatewayConfig,
 }: {
   systemPrompt: string;
   context: string;
+  gatewayConfig: BrowserGatewayConfig;
 }): Promise<{
   text: string;
   provider: string;
   model: string;
 }> {
-  const gateways = await resolveChatGateways();
+  const gateways = await resolveChatGateways(gatewayConfig);
   const failures: string[] = [];
   for (const gateway of gateways) {
     try {
@@ -264,10 +275,14 @@ export async function generateModelText({
   throw new Error(`No inference gateway succeeded. ${failures.join(" ")}`);
 }
 
-export async function generateEpvBriefing(context: string) {
+export async function generateEpvBriefing(
+  context: string,
+  gatewayConfig: BrowserGatewayConfig,
+) {
   return generateModelText({
     systemPrompt:
       "You are a casino player-development analyst. Explain aggregated, synthetic Expected Player Value data in very simple language. Use exactly these headings: BOTTOM LINE, WHAT STANDS OUT, RECOMMENDED NEXT STEPS, WATCH OUT. Under BOTTOM LINE write two short sentences. Under the other headings use no more than three short bullets. Do not use jargon, invent facts, prescribe gambling behavior, or treat predicted value as an approved offer.",
     context,
+    gatewayConfig,
   });
 }

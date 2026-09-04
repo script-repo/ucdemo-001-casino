@@ -1,11 +1,14 @@
-import { generateModelText } from "@/lib/model-gateways";
+import {
+  generateModelText,
+  type BrowserGatewayConfig,
+} from "@/lib/model-gateways";
 import { CHURN_DATA } from "@/use-cases/churn-risk-modeling/web/data";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  let body: { playerId?: unknown };
+  let body: { playerId?: unknown; gatewayConfig?: BrowserGatewayConfig };
   try {
     body = (await request.json()) as typeof body;
   } catch {
@@ -37,6 +40,7 @@ export async function POST(request: Request) {
         systemPrompt:
           "You assist a casino host with synthetic churn analytics. Give one practical retention action in simple language. Use exactly these headings: DO NOW, WHY, DO NOT. Keep each section to one or two short sentences. Never encourage increased gambling, invent facts, or bypass eligibility and responsible-gaming checks.",
         context,
+        gatewayConfig: body.gatewayConfig ?? {},
       }),
       { headers: { "Cache-Control": "no-store" } },
     );

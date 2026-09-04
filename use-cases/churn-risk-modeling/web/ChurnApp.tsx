@@ -12,6 +12,15 @@ import {
 
 const BAND_ORDER: Record<RiskBand, number> = { high: 0, medium: 1, low: 2 };
 
+function browserGatewayConfig(): Record<string, string> {
+  try {
+    const value = JSON.parse(localStorage.getItem("casino-ai-gateway-settings-v1") ?? "{}");
+    return value && typeof value === "object" ? value : {};
+  } catch {
+    return {};
+  }
+}
+
 function pct(value: number) {
   return `${Math.round(value * 100)}%`;
 }
@@ -316,7 +325,10 @@ function PlayerPanel({
       const response = await fetch("/api/churn-risk-modeling", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ playerId: player.playerId }),
+        body: JSON.stringify({
+          playerId: player.playerId,
+          gatewayConfig: browserGatewayConfig(),
+        }),
       });
       const result = (await response.json()) as {
         text?: string;

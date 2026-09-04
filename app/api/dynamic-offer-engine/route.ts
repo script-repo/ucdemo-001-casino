@@ -1,4 +1,7 @@
-import { generateModelText } from "@/lib/model-gateways";
+import {
+  generateModelText,
+  type BrowserGatewayConfig,
+} from "@/lib/model-gateways";
 import {
   PROPOSALS,
   type Proposal,
@@ -25,7 +28,11 @@ function isProposal(value: unknown): value is Proposal {
 }
 
 export async function POST(request: Request) {
-  let body: { proposalId?: unknown; proposal?: unknown };
+  let body: {
+    proposalId?: unknown;
+    proposal?: unknown;
+    gatewayConfig?: BrowserGatewayConfig;
+  };
   try {
     body = (await request.json()) as typeof body;
   } catch {
@@ -58,6 +65,7 @@ export async function POST(request: Request) {
         systemPrompt:
           "You explain an already-selected synthetic casino offer to a human reviewer. Do not choose or change the offer. Use exactly these headings: WHY THIS FITS, REVIEW BEFORE APPROVING, DO NOT. Keep each section to one or two short sentences in plain language. Never encourage increased gambling, invent facts, auto-approve, or bypass budget and responsible-gaming controls.",
         context,
+        gatewayConfig: body.gatewayConfig ?? {},
       }),
       { headers: { "Cache-Control": "no-store" } },
     );

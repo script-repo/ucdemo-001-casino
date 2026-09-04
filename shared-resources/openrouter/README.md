@@ -120,6 +120,8 @@ or use a different client. It does not occur in-cluster.
 
 ## Key handling
 
-The key is account-wide and is currently in a Kubernetes Secret and in
-`.env.local`. It was shared in plain text during setup and **should be rotated**
-before this leaves the lab.
+The key is account-wide and is saved only in the current browser's local
+storage. The browser sends it with each inference request; the portal uses it
+transiently and does not persist it on the server. Clear browser site data to
+remove it. Because the portal currently uses lab HTTP, rotate the key and add
+HTTPS before this leaves the isolated environment.

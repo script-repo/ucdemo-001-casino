@@ -79,8 +79,6 @@ spec:
           envFrom:
             - configMapRef:
                 name: shared-resources-config
-            - secretRef:
-                name: shared-resources
           resources:
             requests:
               cpu: 200m

@@ -12,7 +12,7 @@ data:
   # the backends target — verified reachable from a pod in this namespace, and
   # the only one of the two that serves embeddings. Both chat models return a
   # separate reasoning field billed against max_tokens, so keep the budget high.
-  # OPENROUTER_API_KEY comes from the Secret, not from here.
+  # API keys are supplied from browser local storage with each inference request.
   OPENROUTER_BASE_URL: https://openrouter.ai/api/v1
   OPENROUTER_CHAT_MODEL: nvidia/nemotron-3-super-120b-a12b:free
   OPENROUTER_CHAT_MODEL_FAST: nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free

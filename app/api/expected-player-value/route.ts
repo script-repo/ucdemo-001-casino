@@ -18,6 +18,7 @@ import type {
 import {
   generateEpvBriefing,
   generateModelText,
+  type BrowserGatewayConfig,
 } from "@/lib/model-gateways";
 
 export const dynamic = "force-dynamic";
@@ -88,6 +89,7 @@ export async function POST(request: Request) {
     query?: unknown;
     filters?: unknown;
     playerId?: unknown;
+    gatewayConfig?: BrowserGatewayConfig;
   };
   try {
     const raw = await request.text();
@@ -135,7 +137,7 @@ export async function POST(request: Request) {
         ),
         "Provide: (1) executive summary, (2) three observations, (3) responsible next actions, and (4) caveats.",
       ].join("\n");
-      return noStore(await generateEpvBriefing(context));
+      return noStore(await generateEpvBriefing(context, body.gatewayConfig ?? {}));
     }
     if (body.operation === "player-action") {
       const playerId = Number(body.playerId);
@@ -160,6 +162,7 @@ export async function POST(request: Request) {
           systemPrompt:
             "You are assisting a casino host with synthetic player analytics. State exactly one responsible next action in plain language. Use exactly these headings: DO NOW, WHY, DO NOT. Keep each section to one or two short sentences. Never approve an offer, invent facts, recommend increased gambling, or contact a player without applicable eligibility checks.",
           context,
+          gatewayConfig: body.gatewayConfig ?? {},
         }),
       );
     }

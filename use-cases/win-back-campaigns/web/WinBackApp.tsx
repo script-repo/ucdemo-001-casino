@@ -22,6 +22,15 @@ type CandidateDecision = {
 type CampaignStatus = "draft" | "in_review" | "approved" | "released";
 type Report = { text: string; provider: string; model: string };
 
+function browserGatewayConfig(): Record<string, string> {
+  try {
+    const value = JSON.parse(localStorage.getItem("casino-ai-gateway-settings-v1") ?? "{}");
+    return value && typeof value === "object" ? value : {};
+  } catch {
+    return {};
+  }
+}
+
 function money(value: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -141,6 +150,7 @@ export function WinBackApp() {
           valueMin,
           cap,
           campaignName: name,
+          gatewayConfig: browserGatewayConfig(),
         }),
       });
       const result = (await response.json()) as Partial<Report> & { error?: string };

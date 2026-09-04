@@ -1,4 +1,7 @@
-import { generateModelText } from "@/lib/model-gateways";
+import {
+  generateModelText,
+  type BrowserGatewayConfig,
+} from "@/lib/model-gateways";
 import {
   CANDIDATES,
   CHURN_MODEL,
@@ -19,6 +22,7 @@ export async function POST(request: Request) {
     valueMin?: unknown;
     cap?: unknown;
     campaignName?: unknown;
+    gatewayConfig?: BrowserGatewayConfig;
   };
   try {
     body = (await request.json()) as typeof body;
@@ -88,6 +92,7 @@ export async function POST(request: Request) {
         systemPrompt:
           "You assist a casino marketing manager with an aggregate, synthetic win-back campaign preview. Use exactly these headings: CAMPAIGN SUMMARY, COHORT INSIGHTS, REVIEW PRIORITIES, RISKS AND GUARDRAILS. Under each heading use no more than three short bullets in simple language. Do not create per-player copy, invent facts, recommend increased gambling, change eligibility, approve a campaign, or release outreach. Explicitly preserve human review and responsible-gaming exclusions.",
         context,
+        gatewayConfig: body.gatewayConfig ?? {},
       }),
       { headers: { "Cache-Control": "no-store" } },
     );

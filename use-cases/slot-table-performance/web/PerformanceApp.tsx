@@ -12,6 +12,15 @@ import {
 
 type Report = { text: string; provider: string; model: string };
 
+function browserGatewayConfig(): Record<string, string> {
+  try {
+    const value = JSON.parse(localStorage.getItem("casino-ai-gateway-settings-v1") ?? "{}");
+    return value && typeof value === "object" ? value : {};
+  } catch {
+    return {};
+  }
+}
+
 function money(value: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -81,7 +90,13 @@ export function PerformanceApp() {
       const response = await fetch("/api/slot-table-performance", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ operation: "generate-report", view, zone, period }),
+        body: JSON.stringify({
+          operation: "generate-report",
+          view,
+          zone,
+          period,
+          gatewayConfig: browserGatewayConfig(),
+        }),
       });
       const result = (await response.json()) as Partial<Report> & { error?: string };
       if (!response.ok || !result.text) {

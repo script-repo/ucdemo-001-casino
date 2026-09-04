@@ -14,8 +14,6 @@ export default async function ResourcesPage() {
     getResourceStatuses(),
   ]);
 
-  const configured = resourceStatuses.filter((status) => status.configured);
-
   return (
     <div className="mx-auto max-w-[1100px] space-y-8 px-6 py-10">
       {/* Section 10.5 — breadcrumbs below the header for pages deeper than two levels. */}
@@ -36,17 +34,15 @@ export default async function ResourcesPage() {
         </h1>
         <p className="mt-3 max-w-[70ch] leading-relaxed text-charcoal-700">
           Infrastructure every application may depend on. Configuration is
-          supplied by the deployment or saved to the namespace Secret. Values
-          are write-only: this page displays their source and status, never the
-          value. Reference documentation for each resource lives under{" "}
+          saved only in the current browser. Keys are never persisted by the
+          portal server or Kubernetes. Reference documentation for each resource lives under{" "}
           <code className="font-mono text-sm text-navy-900">
             shared-resources/
           </code>
           .
         </p>
-        <p className="tabular mt-4 text-xs text-charcoal-700">
-          {configured.length} of {resourceStatuses.length} configured in this
-          environment
+        <p className="mt-4 text-xs text-charcoal-700">
+          Configuration is specific to this browser profile and device.
         </p>
       </section>
 
