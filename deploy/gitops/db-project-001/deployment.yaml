@@ -21,6 +21,7 @@ spec:
         app.kubernetes.io/name: casino-ai-portal
         app.kubernetes.io/component: frontend
     spec:
+      serviceAccountName: default
       securityContext:
         runAsNonRoot: true
         runAsUser: 1001
