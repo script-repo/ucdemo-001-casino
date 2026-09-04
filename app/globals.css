@@ -1,46 +1,42 @@
 @import "tailwindcss";
 
-/* Executive Resort Modernism — tokens from the corporate digital design guide.
-   The portal renders in Work Mode: white and mist surfaces, charcoal body text,
-   navy structure, burgundy emphasis, and gold as a restrained accent. */
+/* Grand Resort Work Mode — cream canvas, midnight structure, champagne gold.
+   Use cases inherit these tokens; they do not share application code. */
 @theme {
-  /* --- Brand Mode surfaces, darkest to lightest --- */
-  --color-ink-950: #081320; /* page background */
-  --color-ink-900: #0b1929; /* header, hero */
-  --color-ink-850: #0d1c2e; /* side rails */
-  --color-ink-800: #102338; /* cards */
-  --color-ink-750: #15304b; /* card hover, selected rows */
+  --color-ink-950: #081320;
+  --color-ink-900: #0b1929;
+  --color-ink-850: #0d1c2e;
+  --color-ink-800: #102338;
+  --color-ink-750: #15304b;
 
   --color-hairline: #1c3149;
   --color-hairline-strong: #24405e;
 
-  /* --- Brand Mode text --- */
-  --color-ivory-100: #f5f2ea;
+  --color-ivory-50: #f8f4ec;
+  --color-ivory-100: #f3eee3;
+  --color-ivory-200: #e8dfcc;
   --color-fog-300: #a9b8c8;
   --color-fog-500: #7a8ca0;
 
-  /* --- Work Mode surfaces --- */
-  --color-white: #ffffff;
-  --color-navy-950: #0b1929;
-  --color-navy-900: #10243e;
-  --color-navy-700: #29425c;
-  --color-slate-700: #405866;
-  --color-mist-100: #edf0f2;
-  --color-stone-200: #d9d6ce;
-  --color-charcoal-900: #25282a;
-  --color-charcoal-700: #4b4f52;
+  --color-white: #fffcf7;
+  --color-navy-950: #0a1524;
+  --color-navy-900: #12263f;
+  --color-navy-700: #2a4460;
+  --color-slate-700: #4a5d6b;
+  --color-mist-100: #f3eee4;
+  --color-stone-200: #d8cfc0;
+  --color-charcoal-900: #2a2622;
+  --color-charcoal-700: #5a534c;
 
-  /* --- Accents --- */
   --color-burgundy-900: #3d0b10;
   --color-burgundy-800: #4a0f16;
-  --color-burgundy-700: #5a1016;
-  --color-burgundy-500: #82323a;
+  --color-burgundy-700: #6b1a22;
+  --color-burgundy-500: #8a3a42;
 
-  --color-gold-600: #a9874e;
-  --color-gold-500: #c5a467;
-  --color-gold-300: #dec99f;
+  --color-gold-600: #9a7a3c;
+  --color-gold-500: #c4a35a;
+  --color-gold-300: #e2cf9a;
 
-  /* --- Application tile accents, one per use case --- */
   --color-tile-navy: #16324f;
   --color-tile-burgundy: #5c1119;
   --color-tile-emerald: #1b4a38;
@@ -48,7 +44,6 @@
   --color-tile-teal: #17484a;
   --color-tile-plum: #3c2a54;
 
-  /* --- Status colours with accessible contrast on light surfaces. --- */
   --color-success: #17675f;
   --color-success-dark: #125047;
   --color-warning: #8a570f;
@@ -57,47 +52,72 @@
   --color-information: #245f94;
 
   --font-sans: var(--font-inter), Arial, sans-serif;
-  --font-serif: var(--font-source-serif), Georgia, serif;
+  --font-serif: var(--font-playfair), Georgia, serif;
 
   --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 10px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
 
   --transition-fast: 150ms ease;
   --transition-standard: 220ms ease;
 }
 
 body {
-  background-color: var(--color-white);
+  background-color: var(--color-ivory-50);
+  background-image:
+    radial-gradient(1200px 500px at 50% -10%, rgba(196, 163, 90, 0.08), transparent 55%),
+    linear-gradient(180deg, #fbf7ef 0%, #f4efe4 100%);
   color: var(--color-charcoal-900);
   font-family: var(--font-sans);
 }
 
-/* Section 31.1 — focus must not rely on browser defaults. */
 :focus-visible {
   outline: 3px solid var(--color-gold-500);
   outline-offset: 3px;
 }
 
-/* Section 16.4 / 5.4 — tabular numerals in dashboards and financial reporting. */
 .tabular {
   font-variant-numeric: tabular-nums;
 }
 
-/* Section 4.2 — gold as a fine editorial rule, never as body text. */
 .gold-rule {
-  width: 40px;
-  height: 2px;
-  background-color: var(--color-gold-500);
+  width: 48px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--color-gold-500), var(--color-gold-300));
 }
 
-/* Flat Work Mode hero treatment; gold remains a fine editorial accent only. */
 .hero-motif {
-  background-color: var(--color-mist-100);
+  background:
+    linear-gradient(135deg, rgba(10, 21, 36, 0.96), rgba(18, 38, 63, 0.92)),
+    radial-gradient(circle at 88% 12%, rgba(196, 163, 90, 0.22), transparent 42%);
 }
 
-/* Section 26.4 */
+.resort-frame {
+  overflow: hidden;
+  border: 1px solid var(--color-stone-200);
+  border-radius: 18px;
+  background: var(--color-ivory-50);
+  box-shadow:
+    0 1px 0 rgba(255, 252, 247, 0.8) inset,
+    0 24px 60px -36px rgba(10, 21, 36, 0.38);
+}
+
+.resort-panel {
+  border: 1px solid var(--color-stone-200);
+  border-radius: 14px;
+  background: var(--color-white);
+  box-shadow: 0 10px 28px -22px rgba(10, 21, 36, 0.28);
+}
+
+.eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-gold-600);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

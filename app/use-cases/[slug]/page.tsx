@@ -42,21 +42,21 @@ export default async function UseCasePage({ params }: PageProps) {
   }
 
   return (
-    <div className="mx-auto max-w-[1280px] space-y-8 px-6 py-10">
-      <nav aria-label="Breadcrumb" className="text-xs text-slate-700">
+    <div className="mx-auto max-w-[1320px] space-y-8 px-6 py-10">
+      <nav aria-label="Breadcrumb" className="text-xs text-charcoal-700">
         <Link href="/" className="hover:text-navy-950">
           Dashboard
         </Link>
-        <span className="px-2" aria-hidden>
+        <span className="px-2 text-gold-600" aria-hidden>
           /
         </span>
-        <span className="text-charcoal-700">{useCase.title}</span>
+        <span className="text-charcoal-900">{useCase.title}</span>
       </nav>
 
-      <header className="border-b border-stone-200 pb-6">
-        <div className="gold-rule" aria-hidden />
-        <div className="mt-4 flex flex-wrap items-center gap-4">
-          <h1 className="font-serif text-3xl text-navy-950">
+      <header className="resort-panel px-6 py-6 sm:px-8">
+        <p className="eyebrow">Property operations</p>
+        <div className="mt-3 flex flex-wrap items-center gap-4">
+          <h1 className="font-serif text-4xl text-navy-950">
             {useCase.title}
           </h1>
           <StatusBadge status={useCase.status} />

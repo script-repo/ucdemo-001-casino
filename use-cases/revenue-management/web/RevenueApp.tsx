@@ -209,14 +209,12 @@ export function RevenueApp() {
   }
 
   return (
-    <div className="-mx-2 overflow-hidden rounded-xl border border-stone-200 bg-mist-100 text-charcoal-900 shadow-sm sm:mx-0">
+    <div className="resort-frame -mx-2 text-charcoal-900 sm:mx-0">
       <header className="border-b border-stone-200 bg-white px-5 py-5 sm:px-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
             <div className="gold-rule" aria-hidden />
-            <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-charcoal-700">
-              Internal · Revenue management
-            </p>
+            <p className="eyebrow mt-3">Internal · Revenue management</p>
             <h2 className="mt-2 font-serif text-3xl text-navy-900">
               Revenue Management
             </h2>

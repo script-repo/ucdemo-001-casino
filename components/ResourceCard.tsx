@@ -17,7 +17,7 @@ export function ResourceCard({
   } = status;
 
   return (
-    <div className="rounded-lg border border-stone-200 bg-white p-6">
+    <div className="resort-panel p-6">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-charcoal-700">

@@ -5,11 +5,6 @@ import { usePathname } from "next/navigation";
 import { Icon } from "@/components/icons";
 import { DEMO_USER } from "@/lib/demo-content";
 
-/**
- * Only routes that exist are listed. "Applications" jumps to the catalogue on
- * the dashboard rather than being a separate page, because the dashboard is the
- * catalogue.
- */
 const NAV = [
   { label: "Home", href: "/", match: (path: string) => path === "/" },
   {
@@ -28,8 +23,8 @@ export function TopNav() {
   const pathname = usePathname() ?? "/";
 
   return (
-    <header className="border-b border-stone-200 bg-white">
-      <div className="mx-auto flex h-16 max-w-[1680px] items-center gap-8 px-6">
+    <header className="sticky top-0 z-40 border-b border-gold-500/25 bg-navy-950 text-ivory-100">
+      <div className="mx-auto flex h-[4.5rem] max-w-[1680px] items-center gap-8 px-6">
         <Link
           href="/"
           className="flex shrink-0 items-center gap-3"
@@ -44,8 +39,13 @@ export function TopNav() {
             />
             <path d="M12 7 17 12 12 17 7 12 12 7Z" fill="currentColor" />
           </svg>
-          <span className="font-serif text-lg tracking-tight text-navy-950">
-            Enterprise AI Portal
+          <span className="leading-tight">
+            <span className="block font-serif text-lg tracking-tight text-ivory-100">
+              Enterprise AI Portal
+            </span>
+            <span className="block text-[10px] font-semibold uppercase tracking-[0.22em] text-gold-300">
+              Casino &amp; Resort
+            </span>
           </span>
         </Link>
 
@@ -57,16 +57,16 @@ export function TopNav() {
                 key={item.label}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`relative px-4 py-5 text-sm transition-colors ${
+                className={`relative px-4 py-6 text-sm tracking-wide transition-colors ${
                   active
-                    ? "text-burgundy-700"
-                    : "text-charcoal-700 hover:text-navy-950"
+                    ? "text-gold-300"
+                    : "text-ivory-100/70 hover:text-ivory-100"
                 }`}
               >
                 {item.label}
                 {active && (
                   <span
-                    className="absolute inset-x-3 bottom-0 h-0.5 bg-gold-500"
+                    className="absolute inset-x-3 bottom-0 h-px bg-gold-500"
                     aria-hidden
                   />
                 )}
@@ -76,13 +76,12 @@ export function TopNav() {
         </nav>
 
         <div className="ml-auto flex items-center gap-4">
-          {/* A GET form so search works from any page: the dashboard reads ?q. */}
           <form action="/" className="hidden lg:block">
             <label htmlFor="nav-search" className="sr-only">
               Search applications
             </label>
             <div className="relative">
-              <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-slate-700">
+              <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-gold-300">
                 <Icon name="search" className="size-4" />
               </span>
               <input
@@ -90,28 +89,27 @@ export function TopNav() {
                 name="q"
                 type="search"
                 placeholder="Search applications"
-                className="w-56 rounded-md border border-stone-200 bg-mist-100 py-2 pl-9 pr-3 text-sm text-charcoal-900 placeholder:text-slate-700 focus:border-navy-700 focus:outline-none"
+                className="w-56 rounded-md border border-white/10 bg-white/5 py-2 pl-9 pr-3 text-sm text-ivory-100 placeholder:text-ivory-100/45 focus:border-gold-500 focus:outline-none"
               />
             </div>
           </form>
 
-          {/* Section 35.1 — classification stays visible on operational surfaces. */}
-          <span className="hidden rounded-sm border border-stone-200 px-2 py-1 text-[10px] uppercase tracking-[0.14em] text-slate-700 sm:inline">
+          <span className="hidden rounded-sm border border-gold-500/30 px-2 py-1 text-[10px] uppercase tracking-[0.16em] text-gold-300 sm:inline">
             Internal
           </span>
 
           <div className="flex items-center gap-3">
             <span
-              className="grid size-9 place-items-center rounded-full bg-burgundy-700 text-xs font-semibold text-white"
+              className="grid size-9 place-items-center rounded-full bg-burgundy-700 text-xs font-semibold text-ivory-100"
               aria-hidden
             >
               {DEMO_USER.initials}
             </span>
             <span className="hidden leading-tight xl:block">
-              <span className="block text-sm text-charcoal-900">
+              <span className="block text-sm text-ivory-100">
                 {DEMO_USER.name}
               </span>
-              <span className="block text-xs text-slate-700">
+              <span className="block text-xs text-ivory-100/60">
                 {DEMO_USER.role}
               </span>
             </span>

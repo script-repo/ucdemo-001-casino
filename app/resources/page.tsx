@@ -16,20 +16,19 @@ export default async function ResourcesPage() {
 
   return (
     <div className="mx-auto max-w-[1100px] space-y-8 px-6 py-10">
-      {/* Section 10.5 — breadcrumbs below the header for pages deeper than two levels. */}
       <nav aria-label="Breadcrumb" className="text-xs text-charcoal-700">
         <Link href="/" className="hover:text-navy-900">
           Dashboard
         </Link>
-        <span className="px-2" aria-hidden>
+        <span className="px-2 text-gold-600" aria-hidden>
           /
         </span>
-        <span className="text-charcoal-700">Shared resources</span>
+        <span className="text-charcoal-900">Shared resources</span>
       </nav>
 
-      <section>
-        <div className="gold-rule" aria-hidden />
-        <h1 className="mt-4 font-serif text-3xl text-navy-900">
+      <section className="resort-panel px-6 py-7 sm:px-8">
+        <p className="eyebrow">Infrastructure</p>
+        <h1 className="mt-3 font-serif text-4xl text-navy-950">
           Shared resources
         </h1>
         <p className="mt-3 max-w-[70ch] leading-relaxed text-charcoal-700">

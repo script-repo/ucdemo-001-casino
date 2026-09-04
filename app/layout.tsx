@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Source_Serif_4 } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import { TopNav } from "@/components/TopNav";
 import "./globals.css";
 
@@ -9,9 +9,9 @@ const inter = Inter({
   display: "swap",
 });
 
-const sourceSerif = Source_Serif_4({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  variable: "--font-source-serif",
+  variable: "--font-playfair",
   display: "swap",
 });
 
@@ -28,8 +28,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${sourceSerif.variable}`}>
-      <body className="min-h-screen bg-white text-charcoal-900">
+    <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+      <body className="min-h-screen bg-ivory-50 text-charcoal-900">
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-sm focus:bg-navy-950 focus:px-4 focus:py-2 focus:text-white"

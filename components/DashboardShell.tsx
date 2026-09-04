@@ -119,10 +119,10 @@ export function DashboardShell({
   });
 
   return (
-    <div className="mx-auto flex max-w-[1680px] gap-6 px-6 py-6">
+    <div className="mx-auto flex max-w-[1680px] gap-6 px-6 py-8">
       {/* ---------------- Category rail ---------------- */}
       <aside className="hidden w-60 shrink-0 xl:block">
-        <nav aria-label="Browse by category" className="rounded-lg border border-stone-200 bg-white p-4">
+        <nav aria-label="Browse by category" className="resort-panel p-4">
           <p className="px-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-700">
             Browse by category
           </p>
@@ -179,18 +179,18 @@ export function DashboardShell({
           </button>
         </nav>
 
-        <div className="mt-4 rounded-lg border border-stone-200 bg-mist-100 p-5">
-          <Icon name="crown" className="size-5 text-burgundy-700" />
-          <p className="mt-3 font-serif text-base text-navy-950">
+        <div className="mt-4 rounded-lg border border-stone-200 bg-navy-950 p-5 text-ivory-100">
+          <Icon name="crown" className="size-5 text-gold-500" />
+          <p className="mt-3 font-serif text-base text-ivory-100">
             Need help getting started?
           </p>
-          <p className="mt-2 text-xs leading-relaxed text-charcoal-700">
+          <p className="mt-2 text-xs leading-relaxed text-ivory-100/70">
             Every application shares the same infrastructure. Check what is
             wired up before you build against it.
           </p>
           <Link
             href="/resources"
-            className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-burgundy-700 hover:text-burgundy-900"
+            className="mt-4 inline-flex items-center gap-2 text-xs font-semibold text-gold-300 hover:text-gold-500"
           >
             View shared resources
             <Icon name="arrowRight" className="size-3.5" />
@@ -200,25 +200,26 @@ export function DashboardShell({
 
       {/* ---------------- Main column ---------------- */}
       <main className="min-w-0 flex-1">
-        <section className="hero-motif overflow-hidden rounded-t-lg border border-stone-200 px-8 py-12 md:px-12 md:py-16">
-          <h1 className="max-w-[18ch] font-serif text-4xl leading-tight text-navy-950 md:text-5xl">
+        <section className="hero-motif overflow-hidden rounded-t-[18px] border border-navy-900 px-8 py-14 md:px-12 md:py-20">
+          <p className="eyebrow text-gold-300">Private operations suite</p>
+          <h1 className="mt-4 max-w-[16ch] font-serif text-4xl leading-[1.12] text-ivory-100 md:text-6xl">
             AI Workspace for Casino &amp; Resort Operations
           </h1>
-          <p className="mt-5 max-w-[58ch] leading-relaxed text-charcoal-700">
+          <p className="mt-6 max-w-[58ch] leading-relaxed text-ivory-100/75">
             Securely access AI-powered tools, insights, and workflows that drive
             revenue, delight guests, and manage risk responsibly.
           </p>
-          <div className="mt-8 flex flex-wrap gap-3">
+          <div className="mt-9 flex flex-wrap gap-3">
             <a
               href="#applications"
-              className="inline-flex items-center gap-2 rounded-md bg-burgundy-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-burgundy-900"
+              className="inline-flex items-center gap-2 rounded-md bg-gold-500 px-5 py-2.5 text-sm font-semibold text-navy-950 transition-colors hover:bg-gold-300"
             >
               Explore applications
               <Icon name="arrowRight" className="size-4" />
             </a>
             <Link
               href="/resources"
-              className="inline-flex items-center gap-2 rounded-md border border-navy-700 bg-white px-5 py-2.5 text-sm font-semibold text-navy-950 transition-colors hover:bg-white/60"
+              className="inline-flex items-center gap-2 rounded-md border border-ivory-100/25 bg-white/5 px-5 py-2.5 text-sm font-semibold text-ivory-100 transition-colors hover:bg-white/10"
             >
               View shared resources
             </Link>
@@ -228,10 +229,10 @@ export function DashboardShell({
         {/* Headline metrics. Placeholder figures — see lib/demo-content.ts. */}
         <section
           aria-label="Headline metrics"
-          className="grid grid-cols-2 gap-px overflow-hidden rounded-b-lg border border-t-0 border-stone-200 bg-stone-200 lg:grid-cols-4"
+          className="grid grid-cols-2 gap-px overflow-hidden rounded-b-[18px] border border-t-0 border-stone-200 bg-stone-200 lg:grid-cols-4"
         >
           {HEADLINE_METRICS.map((metric) => (
-            <div key={metric.label} className="flex items-center gap-4 bg-white px-6 py-5">
+            <div key={metric.label} className="flex items-center gap-4 bg-white px-6 py-6">
               <Icon name={metric.icon} className="size-6 shrink-0 text-burgundy-700" />
               <div className="min-w-0">
                 <p className="text-xs text-charcoal-700">{metric.label}</p>
@@ -277,7 +278,7 @@ export function DashboardShell({
                   <li key={useCase.slug} className="relative">
                     <Link
                       href={`/use-cases/${useCase.slug}`}
-                      className="block h-full rounded-lg border border-stone-200 bg-white p-6 transition-colors hover:border-navy-700 hover:bg-mist-100"
+                      className="resort-panel block h-full p-6 transition-all hover:-translate-y-0.5 hover:border-gold-500/50"
                     >
                       <span
                         className={`grid size-12 place-items-center rounded-lg text-gold-300 ${
@@ -335,8 +336,8 @@ export function DashboardShell({
 
       {/* ---------------- Right rail ---------------- */}
       <aside className="hidden w-80 shrink-0 space-y-4 2xl:block">
-        <section className="rounded-lg border border-stone-200 bg-white p-5">
-          <h2 className="text-sm font-semibold text-navy-950">Recent activity</h2>
+        <section className="resort-panel p-5">
+          <h2 className="font-serif text-lg text-navy-950">Recent activity</h2>
           <ul className="mt-4 space-y-3">
             {RECENT_ACTIVITY.map((item) => (
               <li key={item.text} className="flex gap-3">
@@ -354,8 +355,8 @@ export function DashboardShell({
           </ul>
         </section>
 
-        <section className="rounded-lg border border-stone-200 bg-white p-5">
-          <h2 className="text-sm font-semibold text-navy-950">Featured insight</h2>
+        <section className="resort-panel p-5">
+          <h2 className="font-serif text-lg text-navy-950">Featured insight</h2>
           <ul className="mt-4 space-y-3">
             {FEATURED_INSIGHTS.map((item) => (
               <li key={item.title} className="flex gap-3">
@@ -374,8 +375,8 @@ export function DashboardShell({
         </section>
 
         {/* The only rail panel driven by live state. */}
-        <section className="rounded-lg border border-stone-200 bg-white p-5">
-          <h2 className="text-sm font-semibold text-navy-950">
+        <section className="resort-panel p-5">
+          <h2 className="font-serif text-lg text-navy-950">
             Governance &amp; access
           </h2>
           <div className="mt-4 flex items-center gap-4">
@@ -403,8 +404,8 @@ export function DashboardShell({
           </Link>
         </section>
 
-        <section className="rounded-lg border border-stone-200 bg-white p-5">
-          <h2 className="text-sm font-semibold text-navy-950">Quick actions</h2>
+        <section className="resort-panel p-5">
+          <h2 className="font-serif text-lg text-navy-950">Quick actions</h2>
           <div className="mt-4 grid grid-cols-2 gap-3">
             <a
               href="#applications"
