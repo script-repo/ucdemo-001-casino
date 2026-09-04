@@ -51,7 +51,7 @@ flowchart TB
     Churn["Churn-Risk Modeling"]
     Offer["Dynamic Offer Engine"]
     Rev["Revenue Management"]
-    Floor["Slot &amp; Table Performance"]
+    Floor["Slot and Table Performance"]
     Win["Win-Back Campaigns"]
   end
 
